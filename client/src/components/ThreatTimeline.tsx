@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDangenTelemetry, ThreatEvent } from '../neural-hooks/useDangenTelemetry';
+import { useDangenTelemetry, type ThreatEvent } from '../neural-hooks/useDangenTelemetry';
 
 const ThreatTimeline: React.FC = () => {
   const events = useDangenTelemetry((state) => state.events);

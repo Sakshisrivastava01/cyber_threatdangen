@@ -2,6 +2,7 @@ import React, { type ReactNode } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { FiActivity, FiShield, FiMap, FiServer, FiCpu, FiTrendingUp, FiCheckCircle } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
+import FloatingAssistant from '../components/FloatingAssistant';
 
 interface LayoutProps {
   children: ReactNode;
@@ -53,13 +54,13 @@ const CommandCenterLayout: React.FC<LayoutProps> = ({ children }) => {
       >
         {/* Brand */}
         <div className="p-6 border-b border-white/10 flex items-center gap-3 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl translate-x-10 -translate-y-10 pointer-events-none" />
-          <div className="w-9 h-9 rounded bg-cyan-500/20 border border-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(0,229,255,0.3)] z-10">
-            <span className="text-cyan-400 font-bold text-xl leading-none">D</span>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl translate-x-10 -translate-y-10 pointer-events-none" />
+          <div className="w-10 h-10 rounded-lg bg-red-500/20 border border-red-500/50 flex items-center justify-center shadow-[0_0_15px_rgba(255,0,60,0.3)] z-10 overflow-hidden">
+            <img src="/dangen-logo.jpg" alt="DANGEN Logo" className="w-full h-full object-cover" />
           </div>
           <div className="z-10">
             <h1 className="text-base font-bold tracking-[0.2em] text-white leading-tight font-mono">DANGEN</h1>
-            <span className="text-cyan-400 text-[10px] uppercase tracking-widest leading-none block font-mono mt-1">Neural Defense OS</span>
+            <span className="text-red-500 text-[10px] uppercase tracking-widest leading-none block font-mono mt-1">Warfare Command OS</span>
           </div>
         </div>
 
@@ -74,16 +75,16 @@ const CommandCenterLayout: React.FC<LayoutProps> = ({ children }) => {
                 onClick={() => navigate(item.path)}
                 className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all group ${
                   active
-                    ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 shadow-[0_0_15px_rgba(0,229,255,0.15)]'
+                    ? 'bg-red-500/15 text-red-500 border border-red-500/40 shadow-[0_0_15px_rgba(255,0,60,0.25)]'
                     : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
               >
-                <span className={active ? 'text-cyan-400' : 'text-gray-500 group-hover:text-gray-300 transition-colors'}>{item.icon}</span>
+                <span className={active ? 'text-red-500' : 'text-gray-500 group-hover:text-gray-300 transition-colors'}>{item.icon}</span>
                 <div className="min-w-0 flex-1">
                   <div className="font-mono text-sm leading-tight truncate font-semibold">{item.label}</div>
                   <div className="text-[10px] text-gray-500 group-hover:text-gray-400 transition-colors truncate mt-0.5">{item.desc}</div>
                 </div>
-                {active && <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0 shadow-[0_0_8px_#00E5FF]" />}
+                {active && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0 shadow-[0_0_8px_#ff003c]" />}
               </button>
             );
           })}
@@ -93,14 +94,14 @@ const CommandCenterLayout: React.FC<LayoutProps> = ({ children }) => {
         <div className="p-4 border-t border-white/10 space-y-2 bg-white/[0.02]">
           <div className="flex items-center justify-between text-[10px] font-mono text-gray-500">
             <span>NEURAL NET</span>
-            <span className="text-green-400 font-bold">ONLINE</span>
+            <span className="text-red-500 font-bold">ONLINE</span>
           </div>
           <div className="flex items-center justify-between text-[10px] font-mono text-gray-500">
             <span>QUANTUM SHIELD</span>
-            <span className="text-cyan-400 font-bold">ACTIVE</span>
+            <span className="text-red-500 font-bold">ACTIVE</span>
           </div>
           <div className="h-1 bg-white/5 rounded overflow-hidden mt-2">
-            <div className="h-full bg-gradient-to-r from-cyan-500 via-purple-500 to-green-400 w-[94%] rounded animate-pulse" />
+            <div className="h-full bg-gradient-to-r from-red-600 via-red-500 to-red-400 w-[94%] rounded animate-pulse" />
           </div>
           <p className="text-[10px] text-gray-600 font-mono">THREAT MITIGATION: 94.2%</p>
         </div>
@@ -110,28 +111,24 @@ const CommandCenterLayout: React.FC<LayoutProps> = ({ children }) => {
       <div className="flex-1 flex flex-col relative min-w-0">
 
         {/* Cyber grid background */}
-        <div className="absolute inset-0 z-0 opacity-[0.04] pointer-events-none"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(0,229,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,1) 1px, transparent 1px)',
-            backgroundSize: '40px 40px'
-          }}
-        />
+        <div className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none ambient-grid" />
+        <div className="absolute inset-0 z-0 pointer-events-none noise-layer" />
 
         {/* Top bar */}
-        <header className="h-14 border-b border-white/10 flex items-center justify-between px-6 z-10 bg-[#0B1020]/60 backdrop-blur-sm shrink-0">
+        <header className="h-14 border-b border-white/10 flex items-center justify-between px-6 z-10 bg-[#0B000F]/60 backdrop-blur-sm shrink-0">
           <div className="flex items-center gap-3">
             <h2 className="text-sm font-semibold text-white tracking-wider font-mono uppercase">
               {currentItem.label}
             </h2>
-            <span className="text-cyan-400/60 text-xs font-mono hidden sm:block">
+            <span className="text-red-500/60 text-xs font-mono hidden sm:block">
               — {currentItem.desc}
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-green-500/10 border border-green-500/30 rounded text-[10px] font-mono text-green-400 shadow-[0_0_8px_rgba(0,255,163,0.15)]">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-red-500/10 border border-red-500/30 rounded text-[10px] font-mono text-red-500 shadow-[0_0_8px_rgba(255,0,60,0.2)]">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
               </span>
               QUANTUM SHIELD ACTIVE
             </div>
@@ -149,6 +146,7 @@ const CommandCenterLayout: React.FC<LayoutProps> = ({ children }) => {
             {children}
           </motion.div>
         </main>
+        <FloatingAssistant />
       </div>
     </div>
   );

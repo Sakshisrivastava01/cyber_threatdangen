@@ -91,7 +91,7 @@ const CyberGlobe: React.FC = () => {
 
       // Graticule grid
       ctx.beginPath();
-      ctx.strokeStyle = 'rgba(0, 229, 255, 0.06)';
+      ctx.strokeStyle = 'rgba(255, 0, 60, 0.08)';
       ctx.lineWidth = 0.5;
       for (let lon = -180; lon <= 180; lon += 30) {
         const start = projection([lon, -90]);
@@ -115,19 +115,19 @@ const CyberGlobe: React.FC = () => {
       if (worldData) {
         ctx.beginPath();
         pathGen(worldData);
-        ctx.fillStyle = 'rgba(0, 229, 255, 0.06)';
+        ctx.fillStyle = 'rgba(255, 0, 60, 0.05)';
         ctx.fill();
-        ctx.strokeStyle = 'rgba(0, 229, 255, 0.35)';
+        ctx.strokeStyle = 'rgba(255, 0, 60, 0.4)';
         ctx.lineWidth = 0.6;
         ctx.stroke();
 
         // Glowing country borders
         ctx.beginPath();
         pathGen(worldData);
-        ctx.strokeStyle = 'rgba(0, 229, 255, 0.08)';
+        ctx.strokeStyle = 'rgba(255, 0, 60, 0.15)';
         ctx.lineWidth = 2.5;
-        ctx.shadowBlur = 6;
-        ctx.shadowColor = '#00E5FF';
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = '#ff003c';
         ctx.stroke();
         ctx.shadowBlur = 0;
 

@@ -1,0 +1,8 @@
+# Optional machine learning and RAG dependencies
+langchain>=0.0.450
+langchain-community>=0.0.34
+sentence-transformers>=2.2.2
+faiss-cpu>=1.7.4
+torch>=2.2.0
+transformers>=4.40.0
+huggingface-hub>=0.18.0

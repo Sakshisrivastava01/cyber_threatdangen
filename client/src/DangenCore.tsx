@@ -10,6 +10,12 @@ import DarknetSignals from './pages/DarknetSignals';
 import DeviceAnalyzer from './pages/DeviceAnalyzer';
 import ThreatPredictionLab from './pages/ThreatPredictionLab';
 import AIAnalyticsCore from './pages/AIAnalyticsCore';
+import SecurityCopilot from './pages/SecurityCopilot';
+import LiveThreatConsole from './pages/LiveThreatConsole';
+import IncidentInvestigationWorkspace from './pages/IncidentInvestigationWorkspace';
+import NeuralAttackTimeline from './pages/NeuralAttackTimeline';
+import ThreatHeatmapOverlay from './pages/ThreatHeatmapOverlay';
+import AIRecommendationPanel from './pages/AIRecommendationPanel';
 import GlitchTransition from './components/GlitchTransition';
 import { useDangenTelemetry } from './neural-hooks/useDangenTelemetry';
 
@@ -54,6 +60,12 @@ const DangenRoutes = () => {
         <Route path="/device-intelligence" element={<CommandCenterLayout><DeviceAnalyzer /></CommandCenterLayout>} />
         <Route path="/threat-lab" element={<CommandCenterLayout><ThreatPredictionLab /></CommandCenterLayout>} />
         <Route path="/ai-analytics" element={<CommandCenterLayout><AIAnalyticsCore /></CommandCenterLayout>} />
+        <Route path="/copilot" element={<CommandCenterLayout><SecurityCopilot /></CommandCenterLayout>} />
+        <Route path="/threat-console" element={<CommandCenterLayout><LiveThreatConsole /></CommandCenterLayout>} />
+        <Route path="/incident-workspace" element={<CommandCenterLayout><IncidentInvestigationWorkspace /></CommandCenterLayout>} />
+        <Route path="/attack-timeline" element={<CommandCenterLayout><NeuralAttackTimeline /></CommandCenterLayout>} />
+        <Route path="/heatmap" element={<CommandCenterLayout><ThreatHeatmapOverlay /></CommandCenterLayout>} />
+        <Route path="/recommendations" element={<CommandCenterLayout><AIRecommendationPanel /></CommandCenterLayout>} />
       </Routes>
     </>
   );

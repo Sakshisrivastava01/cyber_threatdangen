@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  dangen-backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: dangen-backend:latest
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  dangen-frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: dangen-frontend:latest
+    env_file:
+      - .env
+    ports:
+      - "4173:4173"
+    depends_on:
+      - dangen-backend
+    restart: unless-stopped

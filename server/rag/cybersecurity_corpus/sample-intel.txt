@@ -1,0 +1,1 @@
+Phishing remains one of the most common initial access techniques for ransomware and credential theft. Defenses include strong email filtering, MFA, and end-user awareness training.

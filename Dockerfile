@@ -1,5 +1,12 @@
-FROM python:3.7
-WORKDIR /usr/app/src
-COPY . ./
-RUN pip3 install websockets asyncio
-CMD ["sh","-c","echo http://localhost:8080/simulation.html && python simulation.py table"]
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY server/requirements.txt .
+RUN python -m pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+COPY server/ .
+
+EXPOSE 8000
+CMD ["uvicorn", "dangen_gateway:app", "--host", "0.0.0.0", "--port", "8000"]

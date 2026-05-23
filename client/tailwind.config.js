@@ -8,11 +8,15 @@ export default {
     extend: {
       colors: {
         dangen: {
-          dark: '#0B1020',
-          card: '#121A2B',
-          cyan: '#00E5FF',
-          purple: '#7B61FF',
-          green: '#00FFA3'
+          dark: '#0b000f',
+          card: '#14040a',
+          red: '#ff003c',
+          darkred: '#7a0019',
+          accent: '#ff4d6d',
+          glow: '#ff1744',
+          cyan: '#ff003c',
+          purple: '#7a0019',
+          green: '#ff4d6d'
         }
       },
       fontFamily: {

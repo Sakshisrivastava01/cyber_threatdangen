@@ -1,83 +1,148 @@
-# DANGEN AI CYBER DEFENSE 🛡️
+# DANGEN AI Cyber Defense Platform
 
-**Enterprise AI Cyber Defense Platform | Real-Time Threat Intelligence System**
+![Dangen Neural OS](https://via.placeholder.com/1200x500/0B1020/00E5FF?text=DANGEN+AI+CYBER+DEFENSE)
 
-![Dangen Neural OS](https://via.placeholder.com/1200x500/0B1020/00E5FF?text=INITIALIZING+DANGEN+CORE...)
+Enterprise-grade AI security orchestration for modern cyber threat operations.
 
-Dangen is an autonomous AI security monitoring platform developed from the ground up for modern enterprise infrastructure. It replaces outdated static dashboards with a live, futuristic Neural Intrusion Matrix, providing unparalleled visibility into darknet signals, zero-day exploits, and real-time network anomalies.
+## 🚀 Project Overview
 
----
+DANGEN is a modular AI security platform designed to showcase an enterprise-grade engineering workflow for cyber defense. It combines a React/Vite command center with a Python FastAPI backend, real-time WebSocket threat telemetry, machine learning threat scoring, and a RAG-enabled security guidance pipeline.
 
-## ⚡ Core Capabilities
+This repository reflects a startup-ready engineering structure with:
+- feature branch guidance
+- semantic commit conventions
+- production-ready Docker deployment
+- GitHub Actions CI validation
+- dedicated architecture documentation
+- API and ML system documentation
+- enterprise Git workflow guidance in `docs/git-workflow.md`
 
-- **Neural Intrusion Matrix:** Proprietary AI actively monitors and scores network confidence, instantly flagging anomalies.
-- **Quantum Shield Status:** A live metric dashboard displaying actively blocked vectors and real-time defensive posture.
-- **GeoPulse Radar:** Scans global attack vectors, visualizing threat origins via a glowing HTML5 Canvas node network.
-- **Adaptive Risk Intelligence:** Dynamic data visualization utilizing Recharts to map out the severity and frequency of ongoing attacks (SQLi, XSS, DDoS).
-- **Live Threat Evolution Timeline:** A constant, websocket-powered stream of raw telemetry data, categorizing events by critical severity.
+## 🚧 Core Platform Capabilities
 
----
+- **Neural Threat Telemetry:** WebSocket-based real-time threat feed powering reactive dashboards.
+- **AI Threat Scoring:** Ensemble ML threat predictor with anomaly detection and tactical clustering.
+- **Security RAG pipeline:** Retrieval-Augmented Generation pipeline for threat intelligence and guidance.
+- **Device Intelligence:** IP, URL, and mobile risk analysis based on heuristic and behavioral signals.
+- **GeoPulse Radar:** Global threat heatmap and origin analytics backed by simulated darknet telemetry.
 
-## 🏗 System Architecture
+## 📌 What’s Included
 
-Dangen is built on a highly modular, scalable stack designed for immediate cloud deployment.
+- `client/` — React + TypeScript attack surface visualization and telemetry command center
+- `server/` — FastAPI gateway, ML engines, device intelligence, RAG retrieval logic, WebSocket manager
+- `docs/` — Professional architecture, deployment, API, RAG, and ML pipeline documentation
+- `.github/workflows/` — CI pipelines for frontend, backend, and Docker validation
+- `docker-compose.yml` — Local development and staging orchestration
+- `.env.example` — Environment key placeholders for enterprise integration
 
-### **Frontend (DangenCore)**
-- **Framework:** React 18 + TypeScript + Vite
-- **State Management:** Zustand (`useDangenTelemetry` hook) for zero-latency UI updates.
-- **Motion & UI:** Framer Motion for holographic transitions, Tailwind CSS for the deep neon glassmorphism aesthetic.
-- **Data Vis:** Recharts & native Canvas APIs.
+## 🏗 Architecture at a Glance
 
-### **Backend (Neural Gateway)**
-- **Framework:** Python FastAPI
-- **Real-Time:** WebSockets (`live_stream_manager.py`) streaming simulated neural telemetry.
-- **Validation:** Pydantic (`threat_models.py`).
+```mermaid
+flowchart LR
+  A[React Frontend] -->|HTTP / WebSocket| B[FastAPI Backend]
+  B --> C[ML Threat Engine]
+  B --> D[Device Intelligence]
+  B --> E[RAG AI Copilot]
+  B --> F[Live WebSocket Feed]
+  subgraph Customer Workflow
+    G[Threat Detection] --> H[Alerting & Recommendations]
+  end
+  F --> G
+  C --> G
+  D --> G
+  E --> H
+```
 
----
+## 🧠 Engineering Workflow
 
-## 🚀 Deployment Guide
+### Branching Strategy
+Use feature branches for each discrete capability:
+- `feature/ai-copilot`
+- `feature/rag-pipeline`
+- `feature/ml-threat-engine`
+- `feature/geopulse-radar`
+- `feature/device-intelligence`
+- `fix/websocket-reconnect`
+- `perf/render-optimization`
 
-### Vercel (Frontend)
-1. Link your repository to Vercel.
-2. Set the Root Directory to `client/`.
-3. Framework Preset: **Vite**.
-4. Deploy!
+### Commit Convention
+Use semantic prefixes for clear history:
+- `feat:` — new functionality
+- `fix:` — bug resolution
+- `refactor:` — code restructuring
+- `perf:` — performance improvements
+- `docs:` — documentation updates
+- `chore:` — maintenance tasks
+- `build:` — CI or packaging changes
 
-### Render / Railway (Backend API)
-1. Create a new Web Service pointing to the `server/` directory.
-2. **Build Command:** `pip install -r requirements.txt`
-3. **Start Command:** `uvicorn dangen_gateway:app --host 0.0.0.0 --port $PORT`
+Examples:
+- `feat: integrated realtime websocket telemetry`
+- `feat: added security guidance pipeline`
+- `fix: resolved websocket reconnect instability`
+- `perf: optimized Three.js particle rendering`
+- `docs: added deployment architecture guide`
 
----
+## 📚 Documentation System
 
-## 🛠 Local Initialization Sequence
+See `docs/` for detailed coverage:
+- `docs/architecture.md`
+- `docs/backend-architecture.md`
+- `docs/frontend-architecture.md`
+- `docs/websocket-system.md`
+- `docs/ml-pipeline.md`
+- `docs/rag-architecture.md`
+- `docs/deployment-guide.md`
+- `docs/api-documentation.md`
+- `docs/ai-copilot.md`
+- `docs/git-workflow.md`
 
-Boot up the Dangen Core locally to experience the live telemetry simulation.
+## 🧪 CI / CD Preparation
 
-**1. Initialize Neural Gateway (Backend)**
+This repository ships with GitHub Actions validation for:
+- frontend build and TypeScript validation
+- backend dependency verification and syntax checks
+- Docker compose configuration validation
+
+## 🛠 Local Development
+
+### Backend
 ```bash
 cd server
+python -m venv .venv
+.venv/Scripts/activate
 pip install -r requirements.txt
-python dangen_gateway.py
+uvicorn dangen_gateway:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-**2. Boot Dangen OS (Frontend)**
+### Frontend
 ```bash
 cd client
-npm install
-npm run dev
+npm ci
+npm run dev -- --host 0.0.0.0
 ```
 
-*Access the command center at `http://localhost:5173`.*
+### Docker Compose
+```bash
+docker compose up --build
+```
 
----
+## 📈 Roadmap
 
-## 🔮 Scalability Roadmap
+| Phase | Priority | Outcome |
+| --- | --- | --- |
+| `feature/ml-threat-engine` | High | Harden predictive threat scoring and alert classification |
+| `feature/rag-pipeline` | High | Add enterprise-grade security copilot intelligence |
+| `feature/device-intelligence` | Medium | Expand device posture analysis and risk signals |
+| `feature/geopulse-radar` | Medium | Add geospatial risk correlation and ASN analytics |
+| `perf:render-optimization` | Medium | Improve frontend render performance and reduce bundle size |
+| `fix:websocket-reconnect` | High | Harden websocket session failover and reconnection |
 
-- [ ] **v4.1:** Integrate physical SIEM log ingestion (Splunk, Datadog).
-- [ ] **v4.5:** Deploy the `dangen_ai_engine` with active PyTorch mitigation models.
-- [ ] **v5.0:** Autonomous drone-node defense capabilities.
+## 🔮 Future Enhancements
 
----
-*© 2026 Dangen Security Technologies. Independently built for the future of cyber warfare.*
-\n\n## Contribution Activity\nThis repository has a fresh documentation update to support GitHub contribution tracking and branch activity visibility.\n
+- Integration with real-world threat feeds: VirusTotal, Shodan, AbuseIPDB
+- Vector database persistence with PostgreSQL / Redis / FAISS
+- Production SIEM ingestion for Splunk / Datadog / Elastic
+- Secure OAuth2 / JWT multi-tenant auth layer
+- Automated incident response playbooks and policy orchestration
+
+## 📍 Provenance
+This repo is structured to reflect a professional security startup codebase with clear modular separation, reproducible builds, and enterprise-oriented documentation.

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { geoNaturalEarth1, geoPath } from 'd3-geo';
+import type { GeoProjection } from 'd3-geo';
 import { feature } from 'topojson-client';
 import type { Topology } from 'topojson-specification';
 
@@ -23,7 +24,7 @@ interface AttackArc {
   color: string;
 }
 
-function project(projection: any, lon: number, lat: number): [number, number] | null {
+function project(projection: GeoProjection, lon: number, lat: number): [number, number] | null {
   const p = projection([lon, lat]);
   return p ? [p[0], p[1]] : null;
 }
@@ -39,7 +40,7 @@ const CyberGlobe: React.FC = () => {
     if (!ctx) return;
 
     let animId: number;
-    let worldData: any = null;
+    let worldData: GeoJSON.FeatureCollection | GeoJSON.Feature | null = null;
     let arcs: AttackArc[] = [];
 
     const resize = () => {
@@ -53,10 +54,11 @@ const CyberGlobe: React.FC = () => {
     fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
       .then(r => r.json())
       .then((topo: Topology) => {
-        worldData = feature(topo, (topo as any).objects.countries);
+        // Topology objects are accessed per the library typings
+        worldData = feature(topo, (topo as Topology).objects.countries);
 
-        // Initialize attack arcs
-        arcs = ATTACKS.map(_atk => ({
+        // Initialize attack arcs (length matches ATTACKS)
+        arcs = ATTACKS.map(() => ({
           fromX: 0, fromY: 0, toX: 0, toY: 0,
           progress: Math.random(),
           speed: 0.003 + Math.random() * 0.004,
@@ -84,14 +86,14 @@ const CyberGlobe: React.FC = () => {
         ctx.fillRect(0, y, W, 2);
       }
 
-      const projection = geoNaturalEarth1()
+      const projection = (geoNaturalEarth1()
         .scale(W / 6.5)
-        .translate([W / 2, H / 2]);
+        .translate([W / 2, H / 2])) as GeoProjection;
       const pathGen = geoPath(projection, ctx);
 
       // Graticule grid
       ctx.beginPath();
-      ctx.strokeStyle = 'rgba(0, 229, 255, 0.06)';
+      ctx.strokeStyle = 'rgba(255, 0, 60, 0.08)';
       ctx.lineWidth = 0.5;
       for (let lon = -180; lon <= 180; lon += 30) {
         const start = projection([lon, -90]);
@@ -115,19 +117,19 @@ const CyberGlobe: React.FC = () => {
       if (worldData) {
         ctx.beginPath();
         pathGen(worldData);
-        ctx.fillStyle = 'rgba(0, 229, 255, 0.06)';
+        ctx.fillStyle = 'rgba(255, 0, 60, 0.05)';
         ctx.fill();
-        ctx.strokeStyle = 'rgba(0, 229, 255, 0.35)';
+        ctx.strokeStyle = 'rgba(255, 0, 60, 0.4)';
         ctx.lineWidth = 0.6;
         ctx.stroke();
 
         // Glowing country borders
         ctx.beginPath();
         pathGen(worldData);
-        ctx.strokeStyle = 'rgba(0, 229, 255, 0.08)';
+        ctx.strokeStyle = 'rgba(255, 0, 60, 0.15)';
         ctx.lineWidth = 2.5;
-        ctx.shadowBlur = 6;
-        ctx.shadowColor = '#00E5FF';
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = '#ff003c';
         ctx.stroke();
         ctx.shadowBlur = 0;
 

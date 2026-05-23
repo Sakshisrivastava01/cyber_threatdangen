@@ -7,15 +7,34 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Node / Frontend
+client/node_modules
+client/dist
+client/build
+client/.turbo
+/dist
+/build
+
+# Python / Backend
+server/__pycache__/
+server/*.py[cod]
+server/*$py.class
+server/venv/
+server/env/
+server/ENV/
+server/env.bak/
+server/venv.bak/
+
+# Environment files
+.env
+.env.*
+client/.env
+server/.env
 
 # Editor directories and files
-.vscode/*
+.vscode/
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
@@ -23,13 +42,9 @@ dist-ssr
 *.sln
 *.sw?
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-venv/
-env/
-ENV/
-env.bak/
-venv.bak/
-.env
+# Docker
+docker-compose.override.yml
+**/.dockerignore
+
+# Misc
+*.local

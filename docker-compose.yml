@@ -1,13 +1,13 @@
-version: "3.9"
-
 services:
   dangen-backend:
     build:
       context: ./server
       dockerfile: Dockerfile
     image: dangen-backend:latest
-    env_file:
-      - .env
+    environment:
+      - DEBUG_MODE=${DEBUG_MODE:-false}
+      - WS_INTERVAL=${WS_INTERVAL:-2}
+      - MAX_CACHE_SIZE=${MAX_CACHE_SIZE:-100}
     ports:
       - "8000:8000"
     restart: unless-stopped
@@ -17,8 +17,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     image: dangen-frontend:latest
-    env_file:
-      - .env
+    # Prefer explicit environment variables from the host/CI or Vercel.
     ports:
       - "4173:4173"
     depends_on:

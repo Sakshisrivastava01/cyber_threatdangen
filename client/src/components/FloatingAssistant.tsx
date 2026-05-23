@@ -83,7 +83,7 @@ const FloatingAssistant: React.FC = () => {
   useEffect(() => {
     if (!pendingText) return;
     let index = 0;
-    setStreamingText('');
+    setTimeout(() => setStreamingText(''), 0);
     const interval = window.setInterval(() => {
       if (index >= pendingText.length) {
         window.clearInterval(interval);

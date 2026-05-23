@@ -96,7 +96,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
   useEffect(() => {
     if (stage !== 2) return;
 
-    setTypedLength(0);
+    setTimeout(() => setTypedLength(0), 0);
     const interval = window.setInterval(() => {
       setTypedLength(prev => {
         const next = Math.min(prev + 1, COMMAND_LINE.length);
@@ -111,8 +111,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
   useEffect(() => {
     if (stage !== 2) return;
 
-    setPacketSent(0);
-    setPacketReceived(0);
+    setTimeout(() => setPacketSent(0), 0);
+    setTimeout(() => setPacketReceived(0), 0);
     const interval = window.setInterval(() => {
       setPacketSent(prev => prev + Math.max(1, Math.floor(Math.random() * 5)));
       setPacketReceived(prev => prev + Math.max(1, Math.floor(Math.random() * 4)));
@@ -195,7 +195,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
       updatedLines.push(`> ${BOOT_LINES[nextLineIndex]}...`);
     }
 
-    setBootLines(updatedLines);
+    setTimeout(() => setBootLines(updatedLines), 0);
   }, [percent, stage]);
 
   const handleSkip = () => {
@@ -226,20 +226,28 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
 
   useEffect(() => {
     if (stage === 1) {
-      setActiveLogText('BOOT SEQUENCE INITIATED. SECURE ROUTINES ONLINE.');
-      setActiveLogColor('#ff3b58');
+      setTimeout(() => {
+        setActiveLogText('BOOT SEQUENCE INITIATED. SECURE ROUTINES ONLINE.');
+        setActiveLogColor('#ff3b58');
+      }, 0);
     }
     if (stage === 2) {
-      setActiveLogText('NEURAL CORE SYNCING... ANTICIPATING DATA STREAMS.');
-      setActiveLogColor('#ff5a7a');
+      setTimeout(() => {
+        setActiveLogText('NEURAL CORE SYNCING... ANTICIPATING DATA STREAMS.');
+        setActiveLogColor('#ff5a7a');
+      }, 0);
     }
     if (stage === 3) {
-      setActiveLogText('TACTICAL INTEL ACQUIRED. LOCKING GLOBAL THREAT GRID.');
-      setActiveLogColor('#ff0066');
+      setTimeout(() => {
+        setActiveLogText('TACTICAL INTEL ACQUIRED. LOCKING GLOBAL THREAT GRID.');
+        setActiveLogColor('#ff0066');
+      }, 0);
     }
     if (stage === 4) {
-      setActiveLogText('SYSTEM ONLINE. AWAITING OPERATOR COMMAND...');
-      setActiveLogColor('#8aff9a');
+      setTimeout(() => {
+        setActiveLogText('SYSTEM ONLINE. AWAITING OPERATOR COMMAND...');
+        setActiveLogColor('#8aff9a');
+      }, 0);
     }
   }, [stage]);
 

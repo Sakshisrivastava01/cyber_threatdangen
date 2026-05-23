@@ -213,7 +213,7 @@ const DragonCore3D: React.FC<DragonCore3DProps> = ({ bootStage }) => {
     window.addEventListener('mousemove', handleMouseMove);
 
     // 8. Animation & Render Loop
-    let clock = new THREE.Clock();
+    const clock = new THREE.Clock();
     let animId: number;
 
     const animate = () => {

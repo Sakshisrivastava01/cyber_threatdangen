@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThreatIntelPanel from '../components/ThreatIntelPanel';
 
+const sampleResponse = `Initiating secure analysis module...\nCorrelating event streams with active threat intel...\nRecommended action: deploy containment rules to the affected segments, escalate the anomaly to Tier 1, and verify the asset shield integrity at the next checkpoint.`;
+
 const SecurityCopilot: React.FC = () => {
   const [query, setQuery] = useState('Investigate suspicious outbound traffic to the darknet.');
   const [mode, setMode] = useState<'idle' | 'thinking' | 'streaming'>('idle');
   const [displayed, setDisplayed] = useState('');
   const [error, setError] = useState<string | null>(null);
-
-  const sampleResponse = `Initiating secure analysis module...\nCorrelating event streams with active threat intel...\nRecommended action: deploy containment rules to the affected segments, escalate the anomaly to Tier 1, and verify the asset shield integrity at the next checkpoint.`;
 
   useEffect(() => {
     if (mode === 'streaming') {

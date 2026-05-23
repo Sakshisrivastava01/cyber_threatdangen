@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { geoNaturalEarth1, geoPath } from 'd3-geo';
+import type { GeoProjection } from 'd3-geo';
 import { feature } from 'topojson-client';
 import type { Topology } from 'topojson-specification';
 
@@ -51,19 +52,16 @@ interface LogEntry {
 
 const CyberAttackMap: React.FC<CyberAttackMapProps> = ({ onAttackTriggered, showHud }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const initialLogs: LogEntry[] = [
+    { time: '08:15:20', type: 'DDOS', src: 'RU-WEST', dest: 'US-EAST', color: '#ff003c', status: 'MITIGATED' },
+    { time: '08:15:21', type: 'MALWARE', src: 'CN-NORTH', dest: 'DE-CENTRAL', color: '#ff9f1c', status: 'QUARANTINED' },
+    { time: '08:15:23', type: 'PHISHING', src: 'BR-SOUTH', dest: 'UK-NORTH', color: '#b5179e', status: 'BLOCKED' },
+  ];
+  const [logs, setLogs] = useState<LogEntry[]>(initialLogs);
   const [totalBlocked, setTotalBlocked] = useState(48291);
   const nextIdRef = useRef(1);
 
-  // Initialize some initial logs
-  useEffect(() => {
-    const initialLogs: LogEntry[] = [
-      { time: '08:15:20', type: 'DDOS', src: 'RU-WEST', dest: 'US-EAST', color: '#ff003c', status: 'MITIGATED' },
-      { time: '08:15:21', type: 'MALWARE', src: 'CN-NORTH', dest: 'DE-CENTRAL', color: '#ff9f1c', status: 'QUARANTINED' },
-      { time: '08:15:23', type: 'PHISHING', src: 'BR-SOUTH', dest: 'UK-NORTH', color: '#b5179e', status: 'BLOCKED' },
-    ];
-    setLogs(initialLogs);
-  }, []);
+  // initial logs provided via useState initializer
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -73,9 +71,9 @@ const CyberAttackMap: React.FC<CyberAttackMapProps> = ({ onAttackTriggered, show
     if (!ctx) return;
 
     let animId: number;
-    let worldData: any = null;
-    let activeAttacks: LiveAttack[] = [];
-    let pings: Array<{ x: number; y: number; radius: number; maxRadius: number; color: string; opacity: number }> = [];
+    let worldData: GeoJSON.FeatureCollection | GeoJSON.Feature | null = null;
+    const activeAttacks: LiveAttack[] = [];
+    const pings: Array<{ x: number; y: number; radius: number; maxRadius: number; color: string; opacity: number }> = [];
 
     const resize = () => {
       canvas.width = canvas.parentElement?.clientWidth || window.innerWidth;
@@ -88,17 +86,17 @@ const CyberAttackMap: React.FC<CyberAttackMapProps> = ({ onAttackTriggered, show
     fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
       .then(r => r.json())
       .then((topo: Topology) => {
-        worldData = feature(topo, (topo as any).objects.countries);
+        worldData = feature(topo, (topo as Topology).objects.countries);
       })
-      .catch(e => console.error('Failed to load world map:', e));
+      .catch((e) => console.error('Failed to load world map:', e));
 
-    const project = (projection: any, lon: number, lat: number): [number, number] | null => {
+    const project = (projection: GeoProjection, lon: number, lat: number): [number, number] | null => {
       const p = projection([lon, lat]);
       return p ? [p[0], p[1]] : null;
     };
 
     // Helper to spawn a new attack curve
-    const spawnAttack = (projection: any) => {
+    const spawnAttack = (projection: GeoProjection) => {
       const fromIdx = Math.floor(Math.random() * COUNTRIES.length);
       let toIdx = Math.floor(Math.random() * COUNTRIES.length);
       while (toIdx === fromIdx) {

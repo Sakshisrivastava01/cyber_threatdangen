@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { geoOrthographic, geoPath, geoGraticule10, geoInterpolate, geoDistance } from 'd3-geo';
 import { feature } from 'topojson-client';
+import type { Topology } from 'topojson-specification';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDangenTelemetry, type ThreatEvent } from '../neural-hooks/useDangenTelemetry';
 
@@ -43,7 +44,7 @@ const ThreatMap: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rotationRef = useRef<number>(0);
   const scanAngleRef = useRef<number>(0);
-  const worldDataRef = useRef<any>(null);
+  const worldDataRef = useRef<GeoJSON.FeatureCollection | GeoJSON.Feature | null>(null);
   const activeArcsRef = useRef<AttackArc[]>([]);
 
   // Initial REST API fetch & TopoJSON loading
@@ -64,12 +65,12 @@ const ThreatMap: React.FC = () => {
     // Fetch World Atlas TopoJSON
     fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
       .then(r => r.json())
-      .then(topo => {
-        worldDataRef.current = feature(topo, topo.objects.countries);
+      .then((topo: Topology) => {
+        worldDataRef.current = feature(topo, (topo as Topology).objects.countries) as GeoJSON.FeatureCollection | GeoJSON.Feature;
         setIsLoading(false);
       })
-      .catch(err => {
-        console.error("World TopoJSON fetch error:", err);
+      .catch((err) => {
+        console.error('World TopoJSON fetch error:', err);
         setIsLoading(false);
       });
   }, []);

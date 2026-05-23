@@ -19,7 +19,13 @@ const data = [
   { name: 'Zero-day', count: 2390, color: '#00FFA3' },
 ];
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{ value?: number }> | null;
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="glass-panel p-3 border border-dangen-cyan/50 shadow-[0_0_15px_rgba(0,229,255,0.3)]">

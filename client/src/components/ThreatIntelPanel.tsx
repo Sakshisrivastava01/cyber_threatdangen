@@ -55,7 +55,8 @@ const ThreatIntelPanel: React.FC = () => {
     try {
       const result = await fetchThreatIntel(ip.trim());
       setData(result);
-    } catch (err) {
+    } catch (e) {
+      console.error(e);
       setError('Unable to fetch threat intelligence. Please try again.');
     } finally {
       setLoading(false);

@@ -7,7 +7,7 @@ const API = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 type Tab = 'ip' | 'url' | 'mobile' | 'ml';
 
 interface RiskResult {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 const SeverityBadge = ({ level }: { level: string }) => {
@@ -82,20 +82,34 @@ const ResultPanel = ({ result, loading }: { result: RiskResult | null; loading: 
     );
   }
 
-  if (result.error) {
-    return <p className="text-red-400 font-mono text-sm p-4 bg-red-500/10 border border-red-500/30 rounded-xl">{result.error}</p>;
+  // Safe access helpers for unknown-shaped result
+  const res = result as Record<string, unknown> | null;
+  if (res && typeof res['error'] === 'string') {
+    return <p className="text-red-400 font-mono text-sm p-4 bg-red-500/10 border border-red-500/30 rounded-xl">{String(res['error'])}</p>;
   }
+  const asNumber = (v: unknown, fallback: number) => {
+    if (typeof v === 'number') return v;
+    if (typeof v === 'string' && v.trim() !== '' && !Number.isNaN(Number(v))) return Number(v);
+    return fallback;
+  };
+  const asString = (v: unknown, fallback: string) => (typeof v === 'string' ? v : fallback);
+  
 
-  const riskScore       = result.risk_score ?? result.phishing_probability ?? 78;
-  const severity        = result.severity ?? result.status ?? (riskScore > 70 ? 'CRITICAL' : riskScore > 40 ? 'HIGH' : 'MEDIUM');
-  const indicators      = result.indicators ?? ['Unusual outbound connection spikes detected', 'Port 445 (SMB) exposed to public WAN', 'Anomalous payload structure matching known APT vectors'];
-  const recommendations = result.recommendations ?? ['Instantly isolate host from primary subnet', 'Deploy automated firewall block rule on port 445', 'Initiate deep memory dump and kernel-level rootkit scan'];
+  const riskScore = asNumber(res?.['risk_score'] ?? res?.['phishing_probability'], 78);
+  const severity = (typeof res?.['severity'] === 'string'
+    ? String(res?.['severity'])
+    : typeof res?.['status'] === 'string'
+      ? String(res?.['status'])
+      : (riskScore > 70 ? 'CRITICAL' : riskScore > 40 ? 'HIGH' : 'MEDIUM'));
+
+  const indicators = Array.isArray(res?.['indicators']) ? (res!['indicators'] as string[]) : ['Unusual outbound connection spikes detected', 'Port 445 (SMB) exposed to public WAN', 'Anomalous payload structure matching known APT vectors'];
+  const recommendations = Array.isArray(res?.['recommendations']) ? (res!['recommendations'] as string[]) : ['Instantly isolate host from primary subnet', 'Deploy automated firewall block rule on port 445', 'Initiate deep memory dump and kernel-level rootkit scan'];
 
   // Enhanced features matching user requirement
-  const ipReputation = result.ip_reputation || (riskScore > 60 ? 'MALICIOUS (Known Botnet / C2)' : riskScore > 30 ? 'SUSPICIOUS (Spam Source)' : 'CLEAN (Verified)');
-  const geoIp = result.geo_ip || 'Moscow, RU (ASN: 12389 / Russian Federation)';
-  const vpnDetected = result.vpn_detected ?? (riskScore > 40 ? 'TRUE (TOR Exit Node / Commercial VPN)' : 'FALSE (Direct ISP)');
-  const leakScore = result.leak_score ?? Math.min(99, Math.round(riskScore * 0.85 + 10));
+  const ipReputation = asString(res?.['ip_reputation'], (riskScore > 60 ? 'MALICIOUS (Known Botnet / C2)' : riskScore > 30 ? 'SUSPICIOUS (Spam Source)' : 'CLEAN (Verified)'));
+  const geoIp = asString(res?.['geo_ip'], 'Moscow, RU (ASN: 12389 / Russian Federation)');
+  const vpnDetected = asString(res?.['vpn_detected'], (riskScore > 40 ? 'TRUE (TOR Exit Node / Commercial VPN)' : 'FALSE (Direct ISP)'));
+  const leakScore = asNumber(res?.['leak_score'], Math.min(99, Math.round(riskScore * 0.85 + 10)));
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
@@ -104,7 +118,7 @@ const ResultPanel = ({ result, loading }: { result: RiskResult | null; loading: 
         <SeverityBadge level={severity} />
         <div className="flex items-center gap-2 text-xs font-mono text-gray-400 font-bold">
           <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse inline-block shadow-[0_0_8px_rgba(255,0,60,0.8)]" />
-          AI CONFIDENCE: <span className="text-red-400">{result.ai_confidence ?? 96}%</span>
+          AI CONFIDENCE: <span className="text-red-400">{asNumber(res?.['ai_confidence'], 96)}%</span>
         </div>
       </div>
 
@@ -131,11 +145,11 @@ const ResultPanel = ({ result, loading }: { result: RiskResult | null; loading: 
       {/* Risk meters */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <RiskMeter value={Math.round(riskScore)} label="Overall Threat Risk" />
-        <RiskMeter value={result.phishing_probability ?? Math.round(riskScore * 0.9)} label="Phishing Probability" />
-        <RiskMeter value={result.malware_probability ?? Math.round(riskScore * 0.85)} label="Malware Probability" />
-        <RiskMeter value={result.data_leak_risk ?? leakScore} label="Data Leak Risk" />
-        <RiskMeter value={result.spyware_probability ?? Math.round(riskScore * 0.75)} label="Spyware Probability" />
-        <RiskMeter value={result.threat_probability ?? Math.round(riskScore * 0.95)} label="Attack Probability" />
+        <RiskMeter value={asNumber(res?.['phishing_probability'], Math.round(riskScore * 0.9))} label="Phishing Probability" />
+        <RiskMeter value={asNumber(res?.['malware_probability'], Math.round(riskScore * 0.85))} label="Malware Probability" />
+        <RiskMeter value={asNumber(res?.['data_leak_risk'], leakScore)} label="Data Leak Risk" />
+        <RiskMeter value={asNumber(res?.['spyware_probability'], Math.round(riskScore * 0.75))} label="Spyware Probability" />
+        <RiskMeter value={asNumber(res?.['threat_probability'], Math.round(riskScore * 0.95))} label="Attack Probability" />
       </div>
 
       {/* Port Vulnerability Heatmap */}
@@ -146,7 +160,8 @@ const ResultPanel = ({ result, loading }: { result: RiskResult | null; loading: 
         </p>
         <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 pt-1">
           {[21, 22, 23, 25, 53, 80, 110, 135, 139, 143, 443, 445, 3306, 3389, 5432, 8080].map(port => {
-            const isOpen = result.open_ports?.includes(port) || (port === 22 || port === 445 || port === 3389);
+            const openPorts = Array.isArray(res?.['open_ports']) ? (res!['open_ports'] as unknown[]) : [];
+            const isOpen = openPorts.some(p => Number(p) === port) || (port === 22 || port === 445 || port === 3389);
             const isHighRisk = port === 22 || port === 23 || port === 445 || port === 3389;
             return (
               <div key={port} className={`p-2 rounded-lg text-center border font-mono transition-all ${
@@ -162,25 +177,25 @@ const ResultPanel = ({ result, loading }: { result: RiskResult | null; loading: 
       </div>
 
       {/* Predicted attack */}
-      {(result.predicted_attack || riskScore > 50) && (
+      {(typeof res?.['predicted_attack'] === 'string' ? true : false) || riskScore > 50 && (
         <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl shadow-[0_0_15px_rgba(255,0,60,0.1)] flex items-center justify-between">
           <div>
             <p className="text-xs text-gray-400 font-mono mb-1 uppercase tracking-wider font-bold">PREDICTED ATTACK VECTOR</p>
-            <p className="text-red-400 font-mono text-base font-bold">{result.predicted_attack || 'APT29 / Ransomware Execution Wave'}</p>
+            <p className="text-red-400 font-mono text-base font-bold">{(typeof res?.['predicted_attack'] === 'string' ? String(res!['predicted_attack']) : 'APT29 / Ransomware Execution Wave')}</p>
           </div>
           <span className="text-2xl animate-bounce">⚠️</span>
         </div>
       )}
 
       {/* ML model breakdown */}
-      {result.model_breakdown && (
+      {typeof res?.['model_breakdown'] === 'object' && res!['model_breakdown'] && (
         <div className="space-y-2 bg-white/5 border border-white/10 rounded-xl p-4">
           <p className="text-xs text-gray-400 font-mono uppercase tracking-wider font-bold">ML Model Breakdown</p>
           <div className="grid grid-cols-2 gap-2">
-            {Object.entries(result.model_breakdown).map(([model, val]: [string, any]) => (
+            {Object.entries((res!['model_breakdown'] as Record<string, unknown>) ?? {}).map(([model, val]: [string, unknown]) => (
               <div key={model} className="flex justify-between text-xs font-mono bg-white/5 rounded-lg px-3 py-2 border border-white/5">
                 <span className="text-gray-400 capitalize">{model.replace('_', ' ')}</span>
-                <span className="text-red-400 font-bold">{val}%</span>
+                <span className="text-red-400 font-bold">{String(val)}%</span>
               </div>
             ))}
           </div>
@@ -188,11 +203,11 @@ const ResultPanel = ({ result, loading }: { result: RiskResult | null; loading: 
       )}
 
       {/* Attack vectors */}
-      {result.attack_vectors?.length > 0 && (
+      {Array.isArray(res?.['attack_vectors']) && (res!['attack_vectors'] as unknown[]).length > 0 && (
         <div className="space-y-2 bg-white/5 border border-white/10 rounded-xl p-4">
           <p className="text-xs text-gray-400 font-mono uppercase tracking-wider font-bold">Probable Attack Vectors</p>
           <div className="flex flex-wrap gap-2">
-            {result.attack_vectors.map((v: string) => (
+            {(res!['attack_vectors'] as string[]).map((v: string) => (
               <span key={v} className="px-3 py-1.5 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono rounded-lg font-bold">{v}</span>
             ))}
           </div>
@@ -407,13 +422,13 @@ export default function DeviceAnalyzer() {
 
               {tab === 'ml' && (
                 <div className="grid grid-cols-2 gap-4">
-                  {[
+                  {([
                     ['Packet Rate /s', mlPacketRate, setMlPacketRate],
                     ['Failed Logins', mlFailedLogins, setMlFailedLogins],
                     ['Suspicious Requests', mlSuspiciousReqs, setMlSuspiciousReqs],
                     ['Traffic Spike (0–1)', mlTrafficSpike, setMlTrafficSpike],
                     ['Geo Mismatch (0–1)', mlGeoMismatch, setMlGeoMismatch],
-                  ].map(([label, val, setter]: any) => (
+                  ] as [string, string, React.Dispatch<React.SetStateAction<string>>][]).map(([label, val, setter]) => (
                     <div key={label}><label className={labelClass}>{label}</label>
                       <input className={inputClass} type="number" step="0.01" value={val} onChange={e => setter(e.target.value)} /></div>
                   ))}

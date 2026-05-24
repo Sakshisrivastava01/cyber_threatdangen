@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import CommandCenterLayout from './command-center/CommandCenterLayout';
-import LandingPage from './pages/LandingPage';
+import LandingPageCinematic from './pages/LandingPageCinematic';
 import CommandCenter from './pages/CommandCenter';
 import NeuralIntrusion from './pages/NeuralIntrusion';
 import QuantumRadar from './pages/QuantumRadar';
@@ -52,7 +52,7 @@ const DangenRoutes = () => {
       </AnimatePresence>
 
       <Routes>
-        <Route path="/" element={<LandingPage onEnter={handleLandingEnter} />} />
+        <Route path="/" element={<LandingPageCinematic onEnter={handleLandingEnter} />} />
         <Route path="/dashboard" element={<CommandCenterLayout><CommandCenter /></CommandCenterLayout>} />
         <Route path="/intrusion" element={<CommandCenterLayout><NeuralIntrusion /></CommandCenterLayout>} />
         <Route path="/radar" element={<CommandCenterLayout><QuantumRadar /></CommandCenterLayout>} />

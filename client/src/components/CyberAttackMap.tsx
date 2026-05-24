@@ -353,46 +353,6 @@ const CyberAttackMap: React.FC<CyberAttackMapProps> = ({ onAttackTriggered, show
       <canvas ref={canvasRef} className="w-full h-full opacity-65" />
 
       {/* Holographic Radar HUD overlay */}
-      <div className="absolute top-24 right-6 w-72 glass-panel p-4 font-mono z-30 select-text pointer-events-auto flex flex-col gap-3">
-        <div className="flex justify-between items-center border-b border-red-500/20 pb-1.5">
-          <span className="text-[10px] text-red-500 font-bold tracking-widest flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping"></span>
-            LIVE THREAT RADAR
-          </span>
-          <span className="text-[9px] text-red-400/60">SYS: ACTIVE</span>
-        </div>
-
-        {/* Threat statistics indicators */}
-        <div className="grid grid-cols-2 gap-2 text-left">
-          <div className="p-2 border border-red-950 bg-red-950/10 rounded">
-            <div className="text-[8px] text-gray-500">BLOCKED ATTACKS</div>
-            <div className="text-sm font-bold text-red-500">{totalBlocked.toLocaleString()}</div>
-          </div>
-          <div className="p-2 border border-red-950 bg-red-950/10 rounded">
-            <div className="text-[8px] text-gray-500">DEFENSE FACTOR</div>
-            <div className="text-sm font-bold text-red-400">99.98%</div>
-          </div>
-        </div>
-
-        {/* Interactive Event log stream */}
-        <div className="flex flex-col gap-1 min-h-[140px] max-h-[140px] overflow-hidden custom-scrollbar">
-          {logs.map((log, idx) => (
-            <div
-              key={idx}
-              className="text-[9px] flex justify-between items-center py-0.5 border-b border-red-950/20 last:border-b-0"
-              style={{ color: log.color }}
-            >
-              <span className="text-gray-500 text-[8px]">{log.time}</span>
-              <span className="font-bold">{log.src} ➔ {log.dest}</span>
-              <span className="px-1 py-0.2 border border-current rounded-[2px] text-[7px] leading-tight">
-                {log.status}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Cybernetic Attack Color Legend */}
       {showHud !== false && (
         <div className="absolute top-24 right-6 w-72 glass-panel p-4 font-mono z-30 select-text pointer-events-auto flex flex-col gap-3">
           <div className="flex justify-between items-center border-b border-red-500/20 pb-1.5">
@@ -426,6 +386,15 @@ const CyberAttackMap: React.FC<CyberAttackMapProps> = ({ onAttackTriggered, show
                 <span className="px-1 py-0.2 border border-current rounded-[2px] text-[7px] leading-tight">
                   {log.status}
                 </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-1 text-[9px] text-gray-400">
+            {ATTACK_TYPES.map((type) => (
+              <div key={type.name} className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full shadow-[0_0_5px_currentColor]" style={{ backgroundColor: type.color, color: type.color }} />
+                <span>{type.label}</span>
               </div>
             ))}
           </div>

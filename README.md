@@ -1,110 +1,100 @@
 # DANGEN AI Cyber Defense Platform
 
-![Dangen Neural OS](https://via.placeholder.com/1200x500/0B1020/00E5FF?text=DANGEN+AI+CYBER+DEFENSE)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![WebSockets](https://img.shields.io/badge/WebSockets-0078D7?logo=websockets&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
+[![HuggingFace](https://img.shields.io/badge/HuggingFace-orange?logo=huggingface&logoColor=white)](https://huggingface.co/)
+[![LangChain](https://img.shields.io/badge/LangChain-000000?logo=langchain&logoColor=white)](https://langchain.com/)
+[![FAISS](https://img.shields.io/badge/FAISS-002469?logo=facebook&logoColor=white)](https://github.com/facebookresearch/faiss)
+[![ML](https://img.shields.io/badge/ML-Threat%20Analysis-blue)](https://scikit-learn.org/)
 
-Enterprise-grade AI security orchestration for modern cyber threat operations.
+Enterprise-grade AI cybersecurity operations for modern threat detection, analysis, and response.
 
-## 🚀 Project Overview
+## Project Overview
 
-DANGEN is a modular AI security platform designed to showcase an enterprise-grade engineering workflow for cyber defense. It combines a React/Vite command center with a Python FastAPI backend, real-time WebSocket threat telemetry, machine learning threat scoring, and a RAG-enabled security guidance pipeline.
+DANGEN is a startup-quality AI cybersecurity platform built to demonstrate a production-ready architecture for threat intelligence and security operations.
 
-This repository reflects a startup-ready engineering structure with:
-- feature branch guidance
-- semantic commit conventions
-- production-ready Docker deployment
-- GitHub Actions CI validation
-- dedicated architecture documentation
-- API and ML system documentation
-- enterprise Git workflow guidance in `docs/git-workflow.md`
+The system combines:
+- a React + Vite command center for visualization and interaction
+- a FastAPI backend for API orchestration and analytics
+- WebSocket-based real-time threat telemetry
+- embedded ML threat analysis and anomaly detection
+- a lightweight HuggingFace inference layer for security reasoning
+- a LangChain-enabled RAG pipeline for contextual threat guidance
+- FAISS-style semantic retrieval and vector search support
 
-## 🚧 Core Platform Capabilities
+## Core Features
 
-- **Neural Threat Telemetry:** WebSocket-based real-time threat feed powering reactive dashboards.
-- **AI Threat Scoring:** Ensemble ML threat predictor with anomaly detection and tactical clustering.
-- **Security RAG pipeline:** Retrieval-Augmented Generation pipeline for threat intelligence and guidance.
-- **Device Intelligence:** IP, URL, and mobile risk analysis based on heuristic and behavioral signals.
-- **GeoPulse Radar:** Global threat heatmap and origin analytics backed by simulated darknet telemetry.
+- **Real-time Threat Telemetry** — live attack feed powered by WebSockets
+- **AI Cybersecurity Copilot** — cybersecurity query analysis and guided response
+- **ML Threat Scoring** — predictive risk scoring and anomaly detection
+- **RAG Security Guidance** — retrieval-augmented intelligence for incident context
+- **Device Risk Analysis** — IP, URL, and mobile posture evaluation
+- **Visualization Command Center** — enterprise dashboard with threat maps and timelines
 
-## 📌 What’s Included
+## Architecture Summary
 
-- `client/` — React + TypeScript attack surface visualization and telemetry command center
-- `server/` — FastAPI gateway, ML engines, device intelligence, RAG retrieval logic, WebSocket manager
-- `docs/` — Professional architecture, deployment, API, RAG, and ML pipeline documentation
-- `.github/workflows/` — CI pipelines for frontend, backend, and Docker validation
-- `docker-compose.yml` — Local development and staging orchestration
-- `.env.example` — Environment key placeholders for enterprise integration
+DANGEN is organized into two primary layers:
 
-## 🏗 Architecture at a Glance
+- **Frontend** (`client/`)
+  - React + TypeScript command center
+  - real-time telemetry dashboard
+  - threat analytics and security copilot UI
 
-```mermaid
-flowchart LR
-  A[React Frontend] -->|HTTP / WebSocket| B[FastAPI Backend]
-  B --> C[ML Threat Engine]
-  B --> D[Device Intelligence]
-  B --> E[RAG AI Copilot]
-  B --> F[Live WebSocket Feed]
-  subgraph Customer Workflow
-    G[Threat Detection] --> H[Alerting & Recommendations]
-  end
-  F --> G
-  C --> G
-  D --> G
-  E --> H
-```
+- **Backend** (`server/`)
+  - FastAPI gateway and route orchestration
+  - ML threat engine, anomaly detection, and model registry
+  - WebSocket feed manager for live data streams
+  - HuggingFace inference service and RAG retrieval logic
 
-## 🧠 Engineering Workflow
+The backend is designed for stable startup and incremental AI integration, with lightweight fallback behavior when models or external services are unavailable.
 
-### Branching Strategy
-Use feature branches for each discrete capability:
-- `feature/ai-copilot`
-- `feature/rag-pipeline`
-- `feature/ml-threat-engine`
-- `feature/geopulse-radar`
-- `feature/device-intelligence`
-- `fix/websocket-reconnect`
-- `perf/render-optimization`
+## API Endpoints
 
-### Commit Convention
-Use semantic prefixes for clear history:
-- `feat:` — new functionality
-- `fix:` — bug resolution
-- `refactor:` — code restructuring
-- `perf:` — performance improvements
-- `docs:` — documentation updates
-- `chore:` — maintenance tasks
-- `build:` — CI or packaging changes
+The platform exposes core API routes for threat analysis and copilot interaction:
 
-Examples:
-- `feat: integrated realtime websocket telemetry`
-- `feat: added security guidance pipeline`
-- `fix: resolved websocket reconnect instability`
-- `perf: optimized Three.js particle rendering`
-- `docs: added deployment architecture guide`
+- `POST /api/copilot/analyze`
+  - Input: cybersecurity text/query
+  - Output: AI-generated response, confidence score, model availability
 
-## 📚 Documentation System
+- `POST /api/copilot/chat`
+  - RAG-enabled chat with security knowledge retrieval
 
-See `docs/` for detailed coverage:
-- `docs/architecture.md`
-- `docs/backend-architecture.md`
-- `docs/frontend-architecture.md`
-- `docs/websocket-system.md`
-- `docs/ml-pipeline.md`
-- `docs/rag-architecture.md`
-- `docs/deployment-guide.md`
-- `docs/api-documentation.md`
-- `docs/ai-copilot.md`
-- `docs/git-workflow.md`
+- `POST /api/copilot/stream`
+  - streaming response endpoint for copilot output
 
-## 🧪 CI / CD Preparation
+- `POST /api/ml/predict`
+  - ML threat scoring for structured telemetry inputs
 
-This repository ships with GitHub Actions validation for:
-- frontend build and TypeScript validation
-- backend dependency verification and syntax checks
-- Docker compose configuration validation
+- `POST /api/ml/anomaly`
+  - anomaly detection for batch threat vectors
 
-## 🛠 Local Development
+- `POST /api/device/analyze-ip`
+  - IP posture and risk assessment
+
+- `POST /api/device/analyze-url`
+  - URL threat and phishing analysis
+
+- `GET /api/health/ready`
+  - readiness check for backend service health
+
+- `GET /api/health/live`
+  - liveness check for deployment monitoring
+
+## Tech Stack
+
+- FastAPI, Uvicorn — backend API and runtime
+- React, Vite, Tailwind CSS — frontend experience and dashboard
+- WebSockets — live threat feed and telemetry updates
+- Transformers / HuggingFace — AI inference layer
+- LangChain — RAG and conversational retrieval pipeline
+- FAISS-style retrieval — semantic search for security context
+- scikit-learn, joblib, numpy, pandas — ML threat analytics
+
+## Setup Instructions
 
 ### Backend
+
 ```bash
 cd server
 python -m venv .venv
@@ -114,35 +104,30 @@ uvicorn dangen_gateway:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### Frontend
+
 ```bash
 cd client
 npm ci
 npm run dev -- --host 0.0.0.0
 ```
 
-### Docker Compose
+### Docker
+
 ```bash
 docker compose up --build
 ```
 
-## 📈 Roadmap
+## Future Roadmap
 
-| Phase | Priority | Outcome |
-| --- | --- | --- |
-| `feature/ml-threat-engine` | High | Harden predictive threat scoring and alert classification |
-| `feature/rag-pipeline` | High | Add enterprise-grade security copilot intelligence |
-| `feature/device-intelligence` | Medium | Expand device posture analysis and risk signals |
-| `feature/geopulse-radar` | Medium | Add geospatial risk correlation and ASN analytics |
-| `perf:render-optimization` | Medium | Improve frontend render performance and reduce bundle size |
-| `fix:websocket-reconnect` | High | Harden websocket session failover and reconnection |
+- Harden ML threat analysis and anomaly classification
+- Expand RAG copilot with additional cybersecurity knowledge sources
+- Improve WebSocket resiliency and session recovery
+- Add persistent vector store support for FAISS-backed memory
+- Enable enterprise SIEM integration and operational telemetry
+- Implement secure auth and multi-tenant policy controls
 
-## 🔮 Future Enhancements
+## Documentation
 
-- Integration with real-world threat feeds: VirusTotal, Shodan, AbuseIPDB
-- Vector database persistence with PostgreSQL / Redis / FAISS
-- Production SIEM ingestion for Splunk / Datadog / Elastic
-- Secure OAuth2 / JWT multi-tenant auth layer
-- Automated incident response playbooks and policy orchestration
+Detailed system, API, and deployment documentation is available in the `docs/` folder.
 
-## 📍 Provenance
-This repo is structured to reflect a professional security startup codebase with clear modular separation, reproducible builds, and enterprise-oriented documentation.
+This README is intentionally concise and focused on the platform's enterprise-grade AI cybersecurity value proposition, with minimal changes to the existing codebase and architecture.

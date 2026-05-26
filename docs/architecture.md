@@ -38,7 +38,6 @@ flowchart LR
 - `docs/frontend-architecture.md` — React app structure, component modules, and state management.
 - `docs/websocket-system.md` — real-time threat stream design and resiliency.
 - `docs/ml-pipeline.md` — ML workflows, ensemble prediction, anomaly detection.
-- `docs/rag-architecture.md` — copilot retrieval architecture and fallback vector store.
+- `docs/rag-architecture.md` — threat intelligence retrieval architecture and fallback vector store.
 - `docs/deployment-guide.md` — Docker Compose, environment, and GitHub Actions setup.
 - `docs/api-documentation.md` — API contract and payload reference.
-- `docs/ai-copilot.md` — AI Copilot capability overview and integration.

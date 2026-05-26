@@ -188,8 +188,8 @@ class ThreatIntelligenceService:
         if is_greetings:
             return (
                 "### 👋 DANGEN Threat Intelligence Console Initialized\n\n"
-                "Welcome to the **DANGEN Cyber Intelligence Interface**. I am your real-time security analyst and assistant.\n\n"
-                "I can assist you with:\n"
+                "Welcome to the **DANGEN Cyber Intelligence Interface**. I am your real-time security analyst.\n\n"
+                "I can help you with:\n"
                 "- **Analyzing suspicious IPs/URLs** (e.g. *'Analyze IP 185.220.101.45'*)\n"
                 "- **Explaining cybersecurity vulnerabilities** (e.g. *'Explain Log4Shell'* or *'What is OWASP Top 10?'*)\n"
                 "- **Investigating malware activities** (e.g. *'Summarize Mirai botnet'*)\n"

@@ -20,7 +20,7 @@ def build_rag_prompt(
 
     history_lines = []
     for turn in history:
-        history_lines.append(f"User: {turn.get('user', '')}\nAssistant: {turn.get('assistant', '')}")
+        history_lines.append(f"User: {turn.get('user', '')}\nAnalyst: {turn.get('analyst', '')}")
 
     mitre_lines = []
     for item in mitre_context:
@@ -31,7 +31,7 @@ def build_rag_prompt(
         attack_lines.append(f"{item.get('title')}: {item.get('summary')}")
 
     prompt = (
-        "You are a cybersecurity analyst assistant. Use retrieved context to produce a precise incident response answer, include mitigation guidance, and cite relevant sources.\n\n"
+        "You are a cybersecurity analyst. Use retrieved context to produce a precise incident response answer, include mitigation guidance, and cite relevant sources.\n\n"
         f"Retrieved Context:\n{chr(10).join(context_sections)}\n\n"
         f"MITRE Mapping:\n{chr(10).join(mitre_lines)}\n\n"
         f"Attack Intelligence:\n{chr(10).join(attack_lines)}\n\n"

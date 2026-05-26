@@ -15,7 +15,7 @@ service = ThreatIntelligenceService()
 
 class HistoryEntry(BaseModel):
     user: str
-    assistant: str
+    analyst: str
 
 class ThreatIntelligenceRequest(BaseModel):
     query: str

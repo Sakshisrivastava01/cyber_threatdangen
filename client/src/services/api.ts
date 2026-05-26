@@ -21,7 +21,7 @@ export async function fetchRiskAnalysis() {
   return response.json();
 }
 
-export async function fetchIntelligenceQuery(query: string, history: Array<{ user: string; assistant: string }> = []) {
+export async function fetchIntelligenceQuery(query: string, history: Array<{ user: string; analyst: string }> = []) {
   const response = await fetch(`${API_BASE_URL}/api/intelligence/query`, {
     method: "POST",
     headers: {

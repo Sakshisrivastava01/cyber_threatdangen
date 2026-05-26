@@ -20,6 +20,16 @@ import Login from './pages/Login';
 import GlitchTransition from './components/GlitchTransition';
 import { useDangenTelemetry } from './neural-hooks/useDangenTelemetry';
 
+const isAuthenticated = () => window.localStorage.getItem('dangen_auth') === 'true';
+
+const PrivateRoute = ({ children }: { children: ReactNode }) => (
+  isAuthenticated() ? <>{children}</> : <Navigate to="/login" replace />
+);
+
+const PublicRoute = ({ children }: { children: ReactNode }) => (
+  isAuthenticated() ? <Navigate to="/dashboard" replace /> : <>{children}</>
+);
+
 const DangenRoutes = () => {
   const [isGlitching, setIsGlitching] = useState(false);
   const navigate = useNavigate();
@@ -41,20 +51,10 @@ const DangenRoutes = () => {
     setIsGlitching(true);
   };
 
-  const isAuthenticated = () => window.localStorage.getItem('dangen_auth') === 'true';
-
   const handleGlitchComplete = () => {
     setIsGlitching(false);
     navigate(isAuthenticated() ? '/dashboard' : '/login');
   };
-
-  const PrivateRoute = ({ children }: { children: ReactNode }) => (
-    isAuthenticated() ? <>{children}</> : <Navigate to="/login" replace />
-  );
-
-  const PublicRoute = ({ children }: { children: ReactNode }) => (
-    isAuthenticated() ? <Navigate to="/dashboard" replace /> : <>{children}</>
-  );
 
   return (
     <>

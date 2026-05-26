@@ -40,7 +40,7 @@ const ThreatAnalysisPanel: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const history = useMemo(() => {
-    const pairs: Array<{ user: string; assistant: string }> = [];
+    const pairs: Array<{ user: string; analyst: string }> = [];
     let lastUser = '';
 
     messages.forEach((item) => {
@@ -49,7 +49,7 @@ const ThreatAnalysisPanel: React.FC = () => {
       }
 
       if (item.role === 'core' && lastUser) {
-        pairs.push({ user: lastUser, assistant: item.text });
+        pairs.push({ user: lastUser, analyst: item.text });
         lastUser = '';
       }
     });

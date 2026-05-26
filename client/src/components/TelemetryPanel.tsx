@@ -24,9 +24,11 @@ const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ entries = [], maxEntrie
   useEffect(() => {
     if (entries.length > 0) {
       const lastEntry = entries[0];
-      const isNewEntry = !telemetryData.some((e) => e.message === lastEntry);
 
-      if (isNewEntry) {
+      setTelemetryData((prev) => {
+        const isNewEntry = !prev.some((e) => e.message === lastEntry);
+        if (!isNewEntry) return prev;
+
         const severities: TelemetryEntry['severity'][] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
         const types: TelemetryEntry['type'][] = ['attack', 'threat', 'scan', 'intrusion'];
 
@@ -40,8 +42,8 @@ const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ entries = [], maxEntrie
           targetCountry: ['US', 'UK', 'DE', 'JP', 'AU'][Math.floor(Math.random() * 5)],
         };
 
-        setTelemetryData((prev) => [newEntry, ...prev].slice(0, maxEntries));
-      }
+        return [newEntry, ...prev].slice(0, maxEntries);
+      });
     }
   }, [entries, maxEntries]);
 

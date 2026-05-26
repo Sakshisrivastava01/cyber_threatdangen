@@ -1,11 +1,11 @@
-﻿from .retrieval_engine import CyberRetrievalEngine
+from .retrieval_engine import CyberRetrievalEngine
 from .attack_knowledge_base import AttackKnowledgeBase
 from .context_builder import ContextBuilder
 from .memory_manager import ConversationMemory
 from .mitre_mapper import MitreMapper
 
 
-class CyberCopilotRAG:
+class ThreatIntelligenceRAG:
     """Modular RAG pipeline for DANGEN AI with memory, MITRE, and attack context."""
 
     def __init__(self):
@@ -23,4 +23,4 @@ class CyberCopilotRAG:
         retrieved = self.retrieve(query, top_k)
         return self.context_builder.build(query, retrieved)
 
-rag_pipeline = CyberCopilotRAG()
+rag_pipeline = ThreatIntelligenceRAG()

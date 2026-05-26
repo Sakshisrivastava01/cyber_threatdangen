@@ -9,7 +9,7 @@ from .rag_pipeline import rag_pipeline
 from .memory_manager import ConversationMemory
 
 
-class SecurityCopilot:
+class ThreatIntelligenceAgent:
     def __init__(self):
         self.memory = rag_pipeline.memory if hasattr(rag_pipeline, "memory") else ConversationMemory()
         self.llm_agent = LangChainAgent()
@@ -71,7 +71,7 @@ class SecurityCopilot:
 
     def _fallback_response(self, prompt: str, context: Dict[str, Any]) -> Dict[str, Any]:
         answer = (
-            "DANGEN AI Security Copilot could not invoke the LangChain backend. "
+            "DANGEN Threat Intelligence Engine could not invoke the LangChain backend. "
             "Review the environment or use the legacy retrieval path for incident context."
         )
         return {

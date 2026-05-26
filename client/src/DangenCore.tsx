@@ -1,23 +1,34 @@
-import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { useState, useEffect, type ReactNode } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import CommandCenterLayout from './command-center/CommandCenterLayout';
-import LandingPageCinematic from './pages/LandingPageCinematic';
-import CommandCenter from './pages/CommandCenter';
+import LandingPage from './pages/LandingPage';
 import NeuralIntrusion from './pages/NeuralIntrusion';
 import QuantumRadar from './pages/QuantumRadar';
 import DarknetSignals from './pages/DarknetSignals';
 import DeviceAnalyzer from './pages/DeviceAnalyzer';
 import ThreatPredictionLab from './pages/ThreatPredictionLab';
-import AIAnalyticsCore from './pages/AIAnalyticsCore';
-import SecurityCopilot from './pages/SecurityCopilot';
+import AnalyticsCore from './pages/AnalyticsCore';
+import ThreatIntelligenceEngine from './pages/ThreatIntelligenceEngine';
 import LiveThreatConsole from './pages/LiveThreatConsole';
 import IncidentInvestigationWorkspace from './pages/IncidentInvestigationWorkspace';
 import NeuralAttackTimeline from './pages/NeuralAttackTimeline';
 import ThreatHeatmapOverlay from './pages/ThreatHeatmapOverlay';
-import AIRecommendationPanel from './pages/AIRecommendationPanel';
+import ThreatAdvisoryPanel from './pages/ThreatAdvisoryPanel';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
 import GlitchTransition from './components/GlitchTransition';
 import { useDangenTelemetry } from './neural-hooks/useDangenTelemetry';
+
+const isAuthenticated = () => window.localStorage.getItem('dangen_auth') === 'true';
+
+const PrivateRoute = ({ children }: { children: ReactNode }) => (
+  isAuthenticated() ? <>{children}</> : <Navigate to="/login" replace />
+);
+
+const PublicRoute = ({ children }: { children: ReactNode }) => (
+  isAuthenticated() ? <Navigate to="/dashboard" replace /> : <>{children}</>
+);
 
 const DangenRoutes = () => {
   const [isGlitching, setIsGlitching] = useState(false);
@@ -42,7 +53,7 @@ const DangenRoutes = () => {
 
   const handleGlitchComplete = () => {
     setIsGlitching(false);
-    navigate('/dashboard');
+    navigate(isAuthenticated() ? '/dashboard' : '/login');
   };
 
   return (
@@ -52,20 +63,21 @@ const DangenRoutes = () => {
       </AnimatePresence>
 
       <Routes>
-        <Route path="/" element={<LandingPageCinematic onEnter={handleLandingEnter} />} />
-        <Route path="/dashboard" element={<CommandCenterLayout><CommandCenter /></CommandCenterLayout>} />
+        <Route path="/" element={<LandingPage onEnter={handleLandingEnter} />} />
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/intrusion" element={<CommandCenterLayout><NeuralIntrusion /></CommandCenterLayout>} />
         <Route path="/radar" element={<CommandCenterLayout><QuantumRadar /></CommandCenterLayout>} />
         <Route path="/darknet" element={<CommandCenterLayout><DarknetSignals /></CommandCenterLayout>} />
         <Route path="/device-intelligence" element={<CommandCenterLayout><DeviceAnalyzer /></CommandCenterLayout>} />
         <Route path="/threat-lab" element={<CommandCenterLayout><ThreatPredictionLab /></CommandCenterLayout>} />
-        <Route path="/ai-analytics" element={<CommandCenterLayout><AIAnalyticsCore /></CommandCenterLayout>} />
-        <Route path="/copilot" element={<CommandCenterLayout><SecurityCopilot /></CommandCenterLayout>} />
+        <Route path="/analytics-core" element={<CommandCenterLayout><AnalyticsCore /></CommandCenterLayout>} />
+        <Route path="/intelligence" element={<CommandCenterLayout><ThreatIntelligenceEngine /></CommandCenterLayout>} />
         <Route path="/threat-console" element={<CommandCenterLayout><LiveThreatConsole /></CommandCenterLayout>} />
         <Route path="/incident-workspace" element={<CommandCenterLayout><IncidentInvestigationWorkspace /></CommandCenterLayout>} />
         <Route path="/attack-timeline" element={<CommandCenterLayout><NeuralAttackTimeline /></CommandCenterLayout>} />
         <Route path="/heatmap" element={<CommandCenterLayout><ThreatHeatmapOverlay /></CommandCenterLayout>} />
-        <Route path="/recommendations" element={<CommandCenterLayout><AIRecommendationPanel /></CommandCenterLayout>} />
+        <Route path="/recommendations" element={<CommandCenterLayout><ThreatAdvisoryPanel /></CommandCenterLayout>} />
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
       </Routes>
     </>
   );

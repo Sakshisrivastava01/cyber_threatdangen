@@ -17,7 +17,7 @@ This update scaffolds the next production-ready AI/ML upgrade phase while preser
 
 ## Frontend Enhancements
 - Created new React page shells for advanced AI/Threat modules:
-  - `SecurityCopilot`
+  - `ThreatIntelligenceEngine`
   - `LiveThreatConsole`
   - `IncidentInvestigationWorkspace`
   - `NeuralAttackTimeline`
@@ -32,6 +32,6 @@ This update scaffolds the next production-ready AI/ML upgrade phase while preser
 
 ## Next Steps
 - Connect the new ML endpoints to the frontend AI modules.
-- Add real streaming support for the security copilot page.
+- Add real streaming support for the threat intelligence page.
 - Expand the attack knowledge base and MITRE mapping dataset.
 - Introduce caching and health monitoring layers in the next phase.

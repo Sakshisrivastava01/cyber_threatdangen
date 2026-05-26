@@ -26,7 +26,7 @@ The system combines:
 ## Core Features
 
 - **Real-time Threat Telemetry** — live attack feed powered by WebSockets
-- **AI Cybersecurity Copilot** — cybersecurity query analysis and guided response
+- **Threat Intelligence Engine** — cybersecurity query analysis and guided response
 - **ML Threat Scoring** — predictive risk scoring and anomaly detection
 - **RAG Security Guidance** — retrieval-augmented intelligence for incident context
 - **Device Risk Analysis** — IP, URL, and mobile posture evaluation
@@ -39,7 +39,7 @@ DANGEN is organized into two primary layers:
 - **Frontend** (`client/`)
   - React + TypeScript command center
   - real-time telemetry dashboard
-  - threat analytics and security copilot UI
+  - threat analytics and threat intelligence UI
 
 - **Backend** (`server/`)
   - FastAPI gateway and route orchestration
@@ -51,17 +51,17 @@ The backend is designed for stable startup and incremental AI integration, with 
 
 ## API Endpoints
 
-The platform exposes core API routes for threat analysis and copilot interaction:
+The platform exposes core API routes for threat analysis and intelligence interaction:
 
-- `POST /api/copilot/analyze`
+- `POST /api/intelligence/analyze`
   - Input: cybersecurity text/query
-  - Output: AI-generated response, confidence score, model availability
+  - Output: intelligence response, confidence score, model availability
 
-- `POST /api/copilot/chat`
-  - RAG-enabled chat with security knowledge retrieval
+- `POST /api/intelligence/query`
+  - RAG-enabled threat intelligence query with security knowledge retrieval
 
-- `POST /api/copilot/stream`
-  - streaming response endpoint for copilot output
+- `POST /api/intelligence/stream`
+  - streaming response endpoint for threat intelligence output
 
 - `POST /api/ml/predict`
   - ML threat scoring for structured telemetry inputs
@@ -120,7 +120,7 @@ docker compose up --build
 ## Future Roadmap
 
 - Harden ML threat analysis and anomaly classification
-- Expand RAG copilot with additional cybersecurity knowledge sources
+- Expand RAG threat intelligence with additional cybersecurity knowledge sources
 - Improve WebSocket resiliency and session recovery
 - Add persistent vector store support for FAISS-backed memory
 - Enable enterprise SIEM integration and operational telemetry

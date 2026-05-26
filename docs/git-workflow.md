@@ -16,7 +16,7 @@ The repository is organized for enterprise-grade production engineering. The goa
 Feature work is developed in isolated branches, merged only after code review and CI validation.
 
 Required feature branches:
-- `feature/ai-copilot`
+- `feature/intelligent-analysis`
 - `feature/rag-pipeline`
 - `feature/ml-threat-engine`
 - `feature/geopulse-radar`

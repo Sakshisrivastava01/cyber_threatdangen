@@ -4,7 +4,7 @@ import ThreatIntelPanel from '../components/ThreatIntelPanel';
 
 const sampleResponse = `Initiating secure analysis module...\nCorrelating event streams with active threat intel...\nRecommended action: deploy containment rules to the affected segments, escalate the anomaly to Tier 1, and verify the asset shield integrity at the next checkpoint.`;
 
-const SecurityCopilot: React.FC = () => {
+const ThreatIntelligenceEngine: React.FC = () => {
   const [query, setQuery] = useState('Investigate suspicious outbound traffic to the darknet.');
   const [mode, setMode] = useState<'idle' | 'thinking' | 'streaming'>('idle');
   const [displayed, setDisplayed] = useState('');
@@ -51,7 +51,7 @@ const SecurityCopilot: React.FC = () => {
       className="space-y-6 font-sans text-gray-300"
     >
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-white mb-1 font-mono tracking-[0.04em]">AI Security Copilot</h1>
+        <h1 className="text-3xl font-bold text-white mb-1 font-mono tracking-[0.04em]">Threat Intelligence Engine</h1>
         <p className="text-sm text-gray-400 font-mono max-w-2xl">
           Cinematic command-grade analysis, live breach triage, and analyst-driven decision support.
         </p>
@@ -62,7 +62,7 @@ const SecurityCopilot: React.FC = () => {
         <div className="space-y-4 relative z-10">
           <div className="text-xs uppercase tracking-[0.2em] text-red-300 font-semibold">Query Workspace</div>
           <div className="rounded-3xl border border-red-500/10 bg-[#0b0e16]/90 p-5 shadow-[0_0_30px_rgba(255,0,60,0.1)]">
-            <p className="text-sm text-gray-300">Insert an incident query and watch the AI command stream render the next-level security response.</p>
+            <p className="text-sm text-gray-300">Insert an incident query and watch the Threat Intelligence Engine response render the next-level security response.</p>
             <textarea
               value={query}
               onChange={(evt) => setQuery(evt.target.value)}
@@ -82,7 +82,7 @@ const SecurityCopilot: React.FC = () => {
         <div className="space-y-4 relative z-10">
           <div className="rounded-3xl border border-red-500/15 bg-[#0b0e16]/90 p-5 shadow-[0_0_30px_rgba(255,0,60,0.1)]">
             <div className="flex items-center justify-between text-sm font-mono text-gray-400 mb-4">
-              <span>AI Response Engine</span>
+              <span>Response Engine</span>
               <span className={`rounded-full px-3 py-1 text-xs uppercase tracking-[0.2em] ${mode === 'thinking' ? 'bg-amber-500/15 text-amber-200 border border-amber-400/20' : 'bg-emerald-500/15 text-emerald-200 border border-emerald-400/20'}`}>
                 {mode === 'thinking' ? 'THINKING' : 'READY'}
               </span>
@@ -115,7 +115,7 @@ const SecurityCopilot: React.FC = () => {
           <div className="lg:w-3/5 rounded-3xl border border-red-500/10 bg-[#0b0e16]/90 p-5 backdrop-blur-xl shadow-[0_0_20px_rgba(255,0,60,0.12)]">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.25em] text-red-300">AI Thinking State</p>
+                <p className="text-xs uppercase tracking-[0.25em] text-red-300">Threat Analysis State</p>
                 <h2 className="text-xl font-semibold text-white font-mono">Terminal Stream</h2>
               </div>
               <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-gray-400">
@@ -174,7 +174,7 @@ const SecurityCopilot: React.FC = () => {
                 </div>
                 <div className="rounded-2xl border border-red-500/10 bg-black/40 p-4">
                   <p className="text-xs uppercase tracking-[0.25em] text-gray-500">Confidence</p>
-                  <p className="mt-2 text-white font-semibold">AI-assisted inference stream</p>
+                  <p className="mt-2 text-white font-semibold">Intelligence inference stream</p>
                 </div>
               </div>
             </div>
@@ -189,4 +189,4 @@ const SecurityCopilot: React.FC = () => {
   );
 };
 
-export default SecurityCopilot;
+export default ThreatIntelligenceEngine;

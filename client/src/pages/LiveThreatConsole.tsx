@@ -29,7 +29,7 @@ const LiveThreatConsole: React.FC = () => {
         </div>
 
         <div className="glass-panel p-6 space-y-4">
-          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">AI Confidence</div>
+          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-400">Confidence</div>
           <div className="rounded-3xl bg-slate-950/70 p-4 border border-white/10">
             <div className="text-3xl font-bold text-pink-300">94%</div>
             <div className="text-sm text-gray-400">Confidence across attack classification models</div>

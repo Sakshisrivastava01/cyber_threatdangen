@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const AIRecommendationPanel: React.FC = () => {
+const ThreatAdvisoryPanel: React.FC = () => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -10,8 +10,8 @@ const AIRecommendationPanel: React.FC = () => {
       className="space-y-6 text-gray-300 font-sans"
     >
       <div>
-        <h1 className="text-2xl font-bold text-white font-mono">AI Recommendation Engine</h1>
-        <p className="text-sm text-gray-500 font-mono">Managed defense playbooks and prioritized remediation guidance from DANGEN AI.</p>
+        <h1 className="text-2xl font-bold text-white font-mono">Threat Advisory Engine</h1>
+        <p className="text-sm text-gray-500 font-mono">Managed defense playbooks and prioritized remediation guidance from DANGEN Threat Intelligence.</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -54,4 +54,4 @@ const AIRecommendationPanel: React.FC = () => {
   );
 };
 
-export default AIRecommendationPanel;
+export default ThreatAdvisoryPanel;

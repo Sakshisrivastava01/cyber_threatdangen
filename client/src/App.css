@@ -182,3 +182,87 @@
     border-right-color: var(--border);
   }
 }
+
+.hero-word {
+  position: relative;
+  display: inline-block;
+  letter-spacing: -0.02em;
+}
+
+.hero-word-clone {
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+  filter: blur(0.5px);
+  mix-blend-mode: screen;
+}
+
+.hero-word-clone-red {
+  color: rgba(255, 97, 120, 0.55);
+  transform: translate(2px, 0) skewX(-1deg);
+  animation: glitchRed 4s infinite ease-in-out;
+}
+
+.hero-word-clone-cyan {
+  color: rgba(255, 166, 188, 0.35);
+  transform: translate(-2px, 0) skewX(1deg);
+  animation: glitchCyan 4.4s infinite ease-in-out;
+}
+
+.hero-word-highlight {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.16) 45%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.16) 55%, transparent 100%);
+  mix-blend-mode: screen;
+  opacity: 0.6;
+  transform: translateX(-120%);
+  animation: shimmer 4.5s infinite ease-in-out;
+}
+
+.animate-grid-motion {
+  animation: gridMotion 30s linear infinite;
+}
+
+.animate-pulse-ring {
+  animation: pulseRing 6s ease-in-out infinite;
+}
+
+.animate-scroll-dot {
+  animation: scrollDot 1.8s ease-in-out infinite;
+}
+
+@keyframes glitchRed {
+  0%, 100% { transform: translate(2px, 0) skewX(-1deg); opacity: 0.55; }
+  20% { transform: translate(1px, -1px) skewX(-0.5deg); opacity: 0.45; }
+  40% { transform: translate(3px, 1px) skewX(-1.5deg); opacity: 0.6; }
+  60% { transform: translate(0px, -2px) skewX(-0.8deg); opacity: 0.5; }
+  80% { transform: translate(2px, 1px) skewX(-1deg); opacity: 0.55; }
+}
+
+@keyframes glitchCyan {
+  0%, 100% { transform: translate(-2px, 0) skewX(1deg); opacity: 0.35; }
+  15% { transform: translate(-1px, 1px) skewX(0.8deg); opacity: 0.25; }
+  35% { transform: translate(-3px, -1px) skewX(1.5deg); opacity: 0.4; }
+  55% { transform: translate(-1px, 2px) skewX(1.2deg); opacity: 0.3; }
+  75% { transform: translate(-2px, 0px) skewX(1deg); opacity: 0.35; }
+}
+
+@keyframes shimmer {
+  0%, 100% { transform: translateX(-120%); opacity: 0.55; }
+  50% { transform: translateX(120%); opacity: 0.18; }
+}
+
+@keyframes gridMotion {
+  0% { background-position: 0 0; }
+  100% { background-position: 240px 240px; }
+}
+
+@keyframes pulseRing {
+  0%, 100% { transform: scale(1); opacity: 0.45; }
+  50% { transform: scale(1.08); opacity: 0.12; }
+}
+
+@keyframes scrollDot {
+  0%, 100% { transform: translateY(0); opacity: 0.85; }
+  50% { transform: translateY(5px); opacity: 0.35; }
+}

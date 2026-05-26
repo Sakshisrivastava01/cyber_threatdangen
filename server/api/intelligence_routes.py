@@ -8,20 +8,20 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 
 from inference_service import hf_inference_service
-from services.copilot_service import CopilotService
+from services.intelligence_service import ThreatIntelligenceService
 
 router = APIRouter()
-service = CopilotService()
+service = ThreatIntelligenceService()
 
 class HistoryEntry(BaseModel):
     user: str
-    assistant: str
+    analyst: str
 
-class CopilotRequest(BaseModel):
+class ThreatIntelligenceRequest(BaseModel):
     query: str
     history: Optional[List[HistoryEntry]] = None
 
-class CopilotResponse(BaseModel):
+class ThreatIntelligenceResponse(BaseModel):
     response: str
     confidence: float
     sources: List[Dict[str, Any]]
@@ -36,24 +36,24 @@ class HfAnalyzeResponse(BaseModel):
     model: str
     available: bool
 
-@router.post("/copilot/chat", response_model=CopilotResponse)
-@router.post("/copilot/v1/chat", response_model=CopilotResponse)
-async def copilot_chat(body: CopilotRequest):
+@router.post("/intelligence/query", response_model=ThreatIntelligenceResponse)
+@router.post("/intelligence/v1/query", response_model=ThreatIntelligenceResponse)
+async def intelligence_query(body: ThreatIntelligenceRequest):
     result = await service.get_response(body.query, history=[entry.model_dump() for entry in body.history] if body.history else [])
     return result
 
-@router.post("/copilot/stream")
-async def copilot_stream(body: CopilotRequest):
+@router.post("/intelligence/stream")
+async def intelligence_stream(body: ThreatIntelligenceRequest):
     async def event_stream():
         async for chunk in service.get_response_stream(body.query, history=[entry.model_dump() for entry in body.history] if body.history else []):
             yield chunk
 
     return StreamingResponse(event_stream(), media_type="application/json")
 
-@router.post("/copilot/analyze", response_model=HfAnalyzeResponse)
-async def copilot_analyze(body: HfAnalyzeRequest):
+@router.post("/intelligence/analyze", response_model=HfAnalyzeResponse)
+async def intelligence_analyze(body: HfAnalyzeRequest):
     return hf_inference_service.analyze_text(body.query)
 
-@router.get("/copilot/status")
-async def copilot_status():
-    return {"status": "ok", "service": "DANGEN AI Copilot", "rag_enabled": True}
+@router.get("/intelligence/status")
+async def intelligence_status():
+    return {"status": "ok", "service": "DANGEN Threat Intelligence Engine", "rag_enabled": True}

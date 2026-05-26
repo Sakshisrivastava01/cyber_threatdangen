@@ -1,10 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export type AssistantMessageRole = 'assistant' | 'user' | 'system';
+export type ResponseMessageRole = 'core' | 'user' | 'system';
 
-interface AssistantMessageProps {
-  role: AssistantMessageRole;
+interface ResponseMessageProps {
+  role: ResponseMessageRole;
   text: string;
   time: string;
   severity?: 'low' | 'medium' | 'high' | 'critical';
@@ -17,10 +17,10 @@ const severityStyles = {
   critical: 'bg-red-500/10 text-red-300 border-red-500/20',
 };
 
-const AssistantMessage: React.FC<AssistantMessageProps> = ({ role, text, time, severity }) => {
-  const label = role === 'user' ? 'COMMAND' : role === 'assistant' ? 'DANGEN AI' : 'SYSTEM';
-  const accent = role === 'assistant' ? 'border-red-500/20 bg-[#100712]/90' : 'border-white/10 bg-white/5';
-  const glowClass = role === 'assistant' && severity === 'high' ? 'assistant-response-glow' : '';
+const ResponseMessage: React.FC<ResponseMessageProps> = ({ role, text, time, severity }) => {
+  const label = role === 'user' ? 'COMMAND' : role === 'core' ? 'DANGEN CORE' : 'SYSTEM';
+  const accent = role === 'core' ? 'border-red-500/20 bg-[#100712]/90' : 'border-white/10 bg-white/5';
+  const glowClass = role === 'core' && severity === 'high' ? 'intel-response-glow' : '';
 
   return (
     <motion.div
@@ -42,4 +42,4 @@ const AssistantMessage: React.FC<AssistantMessageProps> = ({ role, text, time, s
   );
 };
 
-export default AssistantMessage;
+export default ResponseMessage;

@@ -44,7 +44,7 @@ const NeuralIntrusion: React.FC = () => {
     <div className="space-y-6 font-sans text-gray-300">
       <div>
         <h1 className="text-2xl font-bold text-white mb-1 font-mono">Neural Intrusion Matrix</h1>
-        <p className="text-sm text-gray-500 font-mono">Real-time attack pattern analysis & AI vector classification</p>
+        <p className="text-sm text-gray-500 font-mono">Real-time attack pattern analysis & vector classification</p>
       </div>
 
       {/* Vector Classification Cards */}
@@ -74,11 +74,11 @@ const NeuralIntrusion: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: AI Mitigation Confidence */}
+        {/* Left: Mitigation Confidence */}
         <div className="glass-panel p-6 space-y-6">
           <h2 className="text-base font-semibold text-white font-mono flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-            AI Mitigation Engine
+            Mitigation Engine
           </h2>
           <div className="space-y-4">
             {[

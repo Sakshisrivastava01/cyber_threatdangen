@@ -1,6 +1,6 @@
 # RAG Architecture
 
-DANGEN includes an AI Copilot retrieval system built for enterprise-grade intelligence augmentation.
+DANGEN includes a threat intelligence retrieval system built for enterprise-grade intelligence augmentation.
 
 ## Key features
 
@@ -11,7 +11,7 @@ DANGEN includes an AI Copilot retrieval system built for enterprise-grade intell
 
 ## RAG retrieval flow
 
-1. Query text is passed to `CyberCopilotRAG.retrieve()`.
+1. Query text is passed to `ThreatIntelligenceRAG.retrieve()`.
 2. If optional ML dependencies load successfully, the system performs semantic similarity search against a FAISS index.
 3. Otherwise, the fallback vector store computes keyword overlap and similarity scores.
 4. Top matches are returned with titles, sources, categories, and confidence scores.

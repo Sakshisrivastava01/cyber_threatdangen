@@ -20,7 +20,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             <span className="text-dangen-cyan font-bold text-xl leading-none">D</span>
           </div>
           <h1 className="text-xl font-display font-bold tracking-widest text-white">
-            DANGEN <span className="text-dangen-cyan text-sm font-normal">AI DEFENSE</span>
+            DANGEN <span className="text-dangen-cyan text-sm font-normal">DEFENSE</span>
           </h1>
         </div>
         <div className="flex items-center gap-4">

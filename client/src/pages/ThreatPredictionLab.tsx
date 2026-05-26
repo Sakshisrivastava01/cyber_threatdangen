@@ -37,8 +37,8 @@ const ThreatPredictionLab: React.FC = () => {
   const linePath = `M ${points.map(p => `${p.x},${p.y}`).join(' L ')}`;
   const areaPath = `${linePath} L 600,150 L 0,150 Z`;
 
-  // Dynamic AI recommendations
-  const getAiRecommendations = () => {
+  // Dynamic forecast recommendations
+  const getForecastRecommendations = () => {
     if (threatProb >= 75) {
       return [
         'IMMEDIATE ACTION: Initiate BGP Blackholing on upstream routers.',
@@ -65,7 +65,7 @@ const ThreatPredictionLab: React.FC = () => {
       <div>
         <h1 className="text-3xl font-bold text-white mb-2 font-mono flex items-center gap-3">
           <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-[0_0_15px_rgba(255,0,60,0.8)]" />
-          Threat Prediction Lab & AI Forecasting
+          Threat Prediction Lab & Forecasting
         </h1>
         <p className="text-sm text-gray-400 font-mono">Interactive machine learning attack forecasting, anomaly scoring & regression modeling</p>
       </div>
@@ -138,7 +138,7 @@ const ThreatPredictionLab: React.FC = () => {
             <div className="flex items-center justify-between border-b border-red-500/20 pb-4 mb-6">
               <h2 className="text-base font-semibold text-white font-mono flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(255,0,60,0.8)]"></span>
-                AI Forecast Output
+                Forecast Output
               </h2>
               <span className={`px-4 py-1.5 rounded-lg text-xs font-mono uppercase tracking-widest font-bold border ${badgeColor}`}>
                 {severity} SEVERITY
@@ -234,14 +234,14 @@ const ThreatPredictionLab: React.FC = () => {
         </div>
       </div>
 
-      {/* AI Recommendations Panel */}
+      {/* Recommendations Panel */}
       <div className="bg-[#14040a] border border-red-500/20 rounded-2xl p-8 shadow-[0_0_40px_rgba(255,0,60,0.1)] backdrop-blur-xl space-y-4">
         <h3 className="text-sm font-mono font-bold text-white uppercase tracking-widest flex items-center gap-2 border-b border-red-500/20 pb-4">
           <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(0,255,100,0.8)]" />
-          AI-Generated Security Recommendations
+          Automated Security Recommendations
         </h3>
         <ul className="space-y-3 font-mono text-xs">
-          {getAiRecommendations().map((rec, i) => (
+          {getForecastRecommendations().map((rec, i) => (
             <li key={i} className="flex items-start gap-3 bg-white/5 p-3 rounded-xl border border-white/5 text-gray-300">
               <span className="text-green-500 font-bold mt-0.5">✓</span>
               <span>{rec}</span>

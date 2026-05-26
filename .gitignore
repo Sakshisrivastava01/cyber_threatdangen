@@ -16,9 +16,9 @@ client/.turbo
 /build
 
 # Python / Backend
-server/__pycache__/
-server/*.py[cod]
-server/*$py.class
+__pycache__/
+*.py[cod]
+*$py.class
 server/venv/
 server/env/
 server/ENV/

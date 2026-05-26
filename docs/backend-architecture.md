@@ -9,7 +9,7 @@ The `server/` directory is the core orchestrator for DANGEN's cyber defense plat
 - `live_threat_stream/live_stream_manager.py` — connection manager for active WebSocket clients and broadcast delivery.
 - `ml_engine/threat_predictor.py` — ensemble ML threat scoring and anomaly detection using scikit-learn.
 - `device_intelligence/risk_engine.py` — heuristic device and threat surface analysis for IP, URL, and mobile telemetry.
-- `rag/rag_pipeline.py` — AI Copilot retrieval engine with optional LangChain / FAISS integration and a pure Python fallback.
+- `rag/rag_pipeline.py` — threat intelligence retrieval engine with optional LangChain / FAISS integration and a pure Python fallback.
 - `models/threat_models.py` — shared Pydantic request/response models for strong API contracts.
 
 ## Backend design principles

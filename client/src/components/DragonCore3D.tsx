@@ -18,7 +18,7 @@ const DragonCore3D: React.FC<DragonCore3DProps> = ({ bootStage }) => {
 
     // 1. Scene & Renderer Setup
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0b000f, 0.015);
+    scene.fog = new THREE.FogExp2(0x0b000f, 0.012);
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     camera.position.z = 180;
@@ -27,16 +27,17 @@ const DragonCore3D: React.FC<DragonCore3DProps> = ({ bootStage }) => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(width, height);
     renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    // Group to hold all rotating elements (for mouse tilt and core spin)
+    // Group to hold all rotating elements
     const mainGroup = new THREE.Group();
     scene.add(mainGroup);
 
     // 2. Custom Extruded Dragon Logo Geometry
     const dragonShape = new THREE.Shape();
     
-    // Draw a high-fidelity stylized dragon head outline
+    // Stylized high-fidelity dragon head shape
     dragonShape.moveTo(40, -10);
     dragonShape.lineTo(60, -5);
     dragonShape.lineTo(75, 5);
@@ -63,9 +64,9 @@ const DragonCore3D: React.FC<DragonCore3DProps> = ({ bootStage }) => {
     dragonShape.lineTo(40, -32);
     dragonShape.lineTo(45, -24);
     dragonShape.lineTo(35, -22);
-    dragonShape.lineTo(40, -10); // jaw connect to snout start
+    dragonShape.lineTo(40, -10); // jaw connect to snout
 
-    // Eye cutout (hole in the mesh)
+    // Eye cutout (hole in mesh)
     const eyePath = new THREE.Path();
     eyePath.moveTo(42, 16);
     eyePath.lineTo(52, 20);
@@ -76,24 +77,24 @@ const DragonCore3D: React.FC<DragonCore3DProps> = ({ bootStage }) => {
     // Extrusion Settings
     const extrudeSettings = {
       steps: 2,
-      depth: 6,
+      depth: 8,
       bevelEnabled: true,
-      bevelThickness: 1.5,
-      bevelSize: 1.2,
+      bevelThickness: 2.0,
+      bevelSize: 1.5,
       bevelOffset: 0,
-      bevelSegments: 4,
+      bevelSegments: 5,
     };
 
     const logoGeometry = new THREE.ExtrudeGeometry(dragonShape, extrudeSettings);
-    logoGeometry.center(); // centers geometry on origin
+    logoGeometry.center();
 
     // 3. Metallic Crimson Shader/Material
     const logoMaterial = new THREE.MeshStandardMaterial({
-      color: 0x880011,
-      metalness: 0.9,
-      roughness: 0.25,
-      emissive: 0x330005,
-      bumpScale: 0.05,
+      color: 0x99000a,
+      metalness: 0.95,
+      roughness: 0.15,
+      emissive: 0x440003,
+      emissiveIntensity: 0.8,
     });
 
     const logoMesh = new THREE.Mesh(logoGeometry, logoMaterial);
@@ -102,38 +103,64 @@ const DragonCore3D: React.FC<DragonCore3DProps> = ({ bootStage }) => {
     logoMesh.receiveShadow = true;
     mainGroup.add(logoMesh);
 
-    // 4. Glowing Orbiting Rings
+    // 4. Cyber Platform at the Bottom
+    const platformGeo = new THREE.CylinderGeometry(52, 58, 5, 32);
+    const platformMat = new THREE.MeshStandardMaterial({
+      color: 0x0c010c,
+      roughness: 0.45,
+      metalness: 0.9,
+      emissive: 0x1f0103,
+    });
+    const platformMesh = new THREE.Mesh(platformGeo, platformMat);
+    platformMesh.position.y = -65;
+    platformMesh.receiveShadow = true;
+    mainGroup.add(platformMesh);
+
+    // Holographic Platform Ring
+    const platformRingGeo = new THREE.TorusGeometry(55, 0.8, 8, 48);
+    const platformRingMat = new THREE.MeshBasicMaterial({
+      color: 0xff003c,
+      transparent: true,
+      opacity: 0.55,
+      wireframe: true,
+    });
+    const platformRing = new THREE.Mesh(platformRingGeo, platformRingMat);
+    platformRing.rotation.x = Math.PI / 2;
+    platformRing.position.y = -62.5;
+    mainGroup.add(platformRing);
+
+    // 5. Glowing Orbiting Rings
     const ringsGroup = new THREE.Group();
     mainGroup.add(ringsGroup);
 
     const ringCount = 3;
     const rings: THREE.Mesh[] = [];
-    const ringSpeeds: number[] = [0.015, -0.02, 0.01];
+    const ringSpeeds: number[] = [0.012, -0.016, 0.008];
 
     for (let i = 0; i < ringCount; i++) {
-      const radius = 48 + i * 14;
-      const tubeRadius = 0.5 + (ringCount - i) * 0.2;
+      const radius = 54 + i * 15;
+      const tubeRadius = 0.6 + (ringCount - i) * 0.15;
       const ringGeo = new THREE.TorusGeometry(radius, tubeRadius, 8, 64);
       
       const ringMat = new THREE.MeshBasicMaterial({
-        color: i === 0 ? 0xff003c : i === 1 ? 0xff3b30 : 0x990011,
+        color: i === 0 ? 0xff003c : i === 1 ? 0xff3b30 : 0xaa0011,
         transparent: true,
-        opacity: 0.7 - i * 0.15,
+        opacity: 0.75 - i * 0.18,
         wireframe: true,
       });
 
       const ringMesh = new THREE.Mesh(ringGeo, ringMat);
       
-      // Rotate rings to sit at cybernetic angles
-      ringMesh.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 0.4;
-      ringMesh.rotation.y = (Math.random() - 0.5) * 0.4;
+      // Cybernetic angles
+      ringMesh.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 0.5;
+      ringMesh.rotation.y = (Math.random() - 0.5) * 0.5;
       
       ringsGroup.add(ringMesh);
       rings.push(ringMesh);
     }
 
-    // 5. Neural Particle Swarm
-    const particleCount = 280;
+    // 6. Neural Particle Swarm
+    const particleCount = 300;
     const particleGeometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const particleSpeeds = new Float32Array(particleCount);
@@ -142,21 +169,20 @@ const DragonCore3D: React.FC<DragonCore3DProps> = ({ bootStage }) => {
 
     for (let i = 0; i < particleCount; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const radius = 35 + Math.random() * 50;
-      const height = (Math.random() - 0.5) * 60;
+      const radius = 40 + Math.random() * 55;
+      const height = (Math.random() - 0.5) * 65;
       
       positions[i * 3] = Math.cos(angle) * radius;
       positions[i * 3 + 1] = height;
       positions[i * 3 + 2] = Math.sin(angle) * radius;
 
-      particleSpeeds[i] = 0.005 + Math.random() * 0.01;
+      particleSpeeds[i] = 0.006 + Math.random() * 0.008;
       particleRadii[i] = radius;
       particleHeights[i] = height;
     }
 
     particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-    // Custom shader/canvas texture for glowing red circular particles
     const createCircleTexture = () => {
       const canvas = document.createElement('canvas');
       canvas.width = 16;
@@ -165,7 +191,7 @@ const DragonCore3D: React.FC<DragonCore3DProps> = ({ bootStage }) => {
       if (ctx) {
         const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
         grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-        grad.addColorStop(0.3, 'rgba(255, 0, 60, 0.8)');
+        grad.addColorStop(0.3, 'rgba(255, 0, 60, 0.85)');
         grad.addColorStop(1, 'rgba(255, 0, 60, 0)');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, 16, 16);
@@ -174,7 +200,7 @@ const DragonCore3D: React.FC<DragonCore3DProps> = ({ bootStage }) => {
     };
 
     const particleMaterial = new THREE.PointsMaterial({
-      size: 2.2,
+      size: 2.5,
       map: createCircleTexture(),
       transparent: true,
       blending: THREE.AdditiveBlending,
@@ -184,94 +210,101 @@ const DragonCore3D: React.FC<DragonCore3DProps> = ({ bootStage }) => {
     const particles = new THREE.Points(particleGeometry, particleMaterial);
     mainGroup.add(particles);
 
-    // 6. Cybernetic Lighting System
-    const ambientLight = new THREE.AmbientLight(0x1a0205, 1.5);
+    // 7. Cybernetic Lighting System
+    const ambientLight = new THREE.AmbientLight(0x220206, 2.0);
     scene.add(ambientLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0xff003c, 6.0);
-    dirLight1.position.set(50, 40, 100);
+    const dirLight1 = new THREE.DirectionalLight(0xff003c, 7.5);
+    dirLight1.position.set(60, 60, 100);
+    dirLight1.castShadow = true;
+    dirLight1.shadow.mapSize.width = 1024;
+    dirLight1.shadow.mapSize.height = 1024;
     scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0x990011, 4.0);
+    const dirLight2 = new THREE.DirectionalLight(0xaa0015, 4.5);
     dirLight2.position.set(-80, -40, 50);
     scene.add(dirLight2);
 
-    const corePointLight = new THREE.PointLight(0xff003c, 10, 120);
+    const corePointLight = new THREE.PointLight(0xff003c, 12, 140);
     corePointLight.position.set(0, 0, 15);
     mainGroup.add(corePointLight);
 
-    // 7. Mouse Interaction Parallax Bindings
+    // 8. Mouse Interaction Parallax Bindings
     const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
       
-      mouseRef.current.targetX = x * 0.4;
-      mouseRef.current.targetY = y * 0.4;
+      mouseRef.current.targetX = x * 0.35;
+      mouseRef.current.targetY = y * 0.35;
     };
 
     window.addEventListener('mousemove', handleMouseMove);
 
-    // 8. Animation & Render Loop
+    // 9. Animation & Render Loop
     const clock = new THREE.Clock();
     let animId: number;
+    let currentY = -80; // Starts below inside the platform
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
-
       const elapsedTime = clock.getElapsedTime();
 
-      // Slow rotation of dragon mesh
-      logoMesh.rotation.y = elapsedTime * 0.22;
-      
-      // Breathing glow effect
-      const breathe = Math.sin(elapsedTime * 2.5) * 0.5 + 0.5;
-      logoMaterial.emissiveIntensity = 0.3 + breathe * 0.7;
-      corePointLight.intensity = 8 + breathe * 6;
+      // Dragon Logo slow spin
+      logoMesh.rotation.y = elapsedTime * 0.25;
 
-      // Animate orbiting rings
+      // Emergence Rise from Platform
+      // Stage 1/2: down at -75. Stage 3/4: rises to 0
+      const targetY = bootStage >= 3 ? 0 : -75;
+      currentY += (targetY - currentY) * 0.045;
+
+      // Floating Idle vertical loop
+      const floatOffset = bootStage >= 3 ? Math.sin(elapsedTime * 1.5) * 4.5 : 0;
+      logoMesh.position.y = currentY + floatOffset;
+
+      // Breathing Emissive Pulse Glow
+      const breathe = Math.sin(elapsedTime * 2.8) * 0.5 + 0.5;
+      logoMaterial.emissiveIntensity = 0.4 + breathe * 0.8;
+      corePointLight.intensity = 10 + breathe * 7;
+
+      // Orbiting rings
       rings.forEach((ring, idx) => {
         ring.rotation.z += ringSpeeds[idx];
-        ring.rotation.x += ringSpeeds[idx] * 0.3;
+        ring.rotation.x += ringSpeeds[idx] * 0.35;
       });
 
-      // Animate particles circulating around
+      // Animate particles
       const posAttr = particleGeometry.getAttribute('position') as THREE.BufferAttribute;
       const posArray = posAttr.array as Float32Array;
 
       for (let i = 0; i < particleCount; i++) {
         const speed = particleSpeeds[i];
         const r = particleRadii[i];
+        const currentAngle = elapsedTime * speed * 7.5 + i;
         
-        // Calculate new angle based on speed
-        const currentAngle = elapsedTime * speed * 8 + i;
         posArray[i * 3] = Math.cos(currentAngle) * r;
         posArray[i * 3 + 2] = Math.sin(currentAngle) * r;
-        
-        // Subtle vertical oscillation
-        posArray[i * 3 + 1] = particleHeights[i] + Math.sin(elapsedTime + i) * 3;
+        posArray[i * 3 + 1] = particleHeights[i] + Math.sin(elapsedTime + i) * 3.5;
       }
       posAttr.needsUpdate = true;
 
-      // Interpolate mouse movements for smooth parallax drift
+      // Interpolate mouse movements
       const mouse = mouseRef.current;
-      mouse.x += (mouse.targetX - mouse.x) * 0.08;
-      mouse.y += (mouse.targetY - mouse.y) * 0.08;
+      mouse.x += (mouse.targetX - mouse.x) * 0.07;
+      mouse.y += (mouse.targetY - mouse.y) * 0.07;
 
       mainGroup.rotation.y = mouse.x;
       mainGroup.rotation.x = -mouse.y;
 
-      // Adjust camera zoom depth depending on boot stage
-      // Stage 1/2: Far away. Stage 3/4: Pull forward to establish detail.
-      const targetZoom = bootStage >= 3 ? 120 : 155;
-      camera.position.z += (targetZoom - camera.position.z) * 0.05;
+      // Camera zoom depth
+      const targetZoom = bootStage >= 3 ? 125 : 160;
+      camera.position.z += (targetZoom - camera.position.z) * 0.045;
 
       renderer.render(scene, camera);
     };
 
     animate();
 
-    // 9. Resize Handling
     const handleResize = () => {
       const w = container.clientWidth;
       const h = container.clientHeight;
@@ -282,13 +315,11 @@ const DragonCore3D: React.FC<DragonCore3DProps> = ({ bootStage }) => {
 
     window.addEventListener('resize', handleResize);
 
-    // 10. Clean-up Resources
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animId);
 
-      // Clean up WebGL objects
       logoGeometry.dispose();
       logoMaterial.dispose();
       rings.forEach(ring => {
@@ -299,6 +330,10 @@ const DragonCore3D: React.FC<DragonCore3DProps> = ({ bootStage }) => {
           ring.material.dispose();
         }
       });
+      platformGeo.dispose();
+      platformMat.dispose();
+      platformRingGeo.dispose();
+      platformRingMat.dispose();
       particleGeometry.dispose();
       particleMaterial.dispose();
       renderer.dispose();

@@ -1,5 +1,5 @@
 """
-DANGEN AI Security Copilot Service
+DANGEN Threat Intelligence Service
 Orchestrates RAG context retrieval, LLM querying via Hugging Face Inference API,
 and local cybersecurity reasoning fallback for instant streaming responses.
 """
@@ -12,7 +12,7 @@ import httpx
 from typing import List, Dict, Any, AsyncGenerator
 from rag.rag_pipeline import rag_pipeline
 from rag.prompt_templates import build_rag_prompt
-from rag.security_copilot import SecurityCopilot
+from rag.intelligence_engine import ThreatIntelligenceAgent
 from device_intelligence.risk_engine import analyze_ip, analyze_url
 
 HF_INFERENCE_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
@@ -21,20 +21,19 @@ def extract_ips(text: str) -> List[str]:
     return re.findall(r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b', text)
 
 def extract_urls(text: str) -> List[str]:
-    # Simple regex for domains/urls
     return re.findall(r'\b(?:https?://)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}(?::\d+)?(?:/[a-zA-Z0-9-._~:/?#\[\]@!$&\'()*+,;=]*)?\b', text)
 
-class CopilotService:
+class ThreatIntelligenceService:
     def __init__(self):
-        self.copilot = SecurityCopilot()
+        self.engine = ThreatIntelligenceAgent()
         # Read HF API token if available in environment
         self.hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACE_API_KEY")
 
     async def get_response(self, message: str, history: List[Dict[str, str]] = None) -> Dict[str, Any]:
         try:
-            return await self.copilot.get_response(message, history)
+            return await self.engine.get_response(message, history)
         except Exception as exc:
-            print(f"SecurityCopilot integration failed, using local fallback: {exc}")
+            print(f"Threat Intelligence Agent integration failed, using local fallback: {exc}")
             return await self._legacy_response(message, history)
 
     async def _legacy_response(self, message: str, history: List[Dict[str, str]] = None) -> Dict[str, Any]:
@@ -184,12 +183,12 @@ class CopilotService:
         is_malware = any(w in msg_lower for w in ["malware", "virus", "spyware", "trojan", "mirai", "tesla", "stealer", "ransomware", "lockbit"])
         is_vuln = any(w in msg_lower for w in ["cve", "log4shell", "heartbleed", "backdoor", "xz", "vulnerability", "vulnerabilities", "owasp", "injection", "ssrf"])
         is_mitigation = any(w in msg_lower for w in ["mitigate", "mitigation", "recommendation", "prevent", "fix", "patch", "containment", "respond", "incident"])
-        is_greetings = any(w in msg_lower for w in ["hi", "hello", "hey", "who are you", "copilot", "charlotte", "watson"])
+        is_greetings = any(w in msg_lower for w in ["hi", "hello", "hey", "who are you", "intelligence engine", "engine", "charlotte", "watson"])
 
         if is_greetings:
             return (
-                "### 👋 DANGEN AI Security Copilot Initialized\n\n"
-                "Welcome to the **DANGEN AI Cyber Intelligence Interface**. I am your real-time security analyst and assistant.\n\n"
+                "### 👋 DANGEN Threat Intelligence Console Initialized\n\n"
+                "Welcome to the **DANGEN Cyber Intelligence Interface**. I am your real-time security analyst and assistant.\n\n"
                 "I can assist you with:\n"
                 "- **Analyzing suspicious IPs/URLs** (e.g. *'Analyze IP 185.220.101.45'*)\n"
                 "- **Explaining cybersecurity vulnerabilities** (e.g. *'Explain Log4Shell'* or *'What is OWASP Top 10?'*)\n"
@@ -320,7 +319,7 @@ class CopilotService:
             )
 
         return (
-            "### 🤖 DANGEN Security Intelligence Copilot\n\n"
+            "### 🤖 DANGEN Threat Intelligence Engine\n\n"
             "I processed your query against our local cybersecurity RAG database. No direct security signatures or CVEs were matched.\n\n"
             "#### General Recommendations:\n"
             "- Double check spelling of IP addresses or CVE numbers (e.g. `CVE-2021-44228`).\n"
@@ -329,4 +328,4 @@ class CopilotService:
         )
 
 # Singleton instance
-copilot_service = CopilotService()
+threat_intelligence_service = ThreatIntelligenceService()

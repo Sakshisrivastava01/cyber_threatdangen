@@ -21,8 +21,8 @@ export async function fetchRiskAnalysis() {
   return response.json();
 }
 
-export async function fetchCopilotChat(query: string, history: Array<{ user: string; assistant: string }> = []) {
-  const response = await fetch(`${API_BASE_URL}/api/copilot/chat`, {
+export async function fetchIntelligenceQuery(query: string, history: Array<{ user: string; assistant: string }> = []) {
+  const response = await fetch(`${API_BASE_URL}/api/intelligence/query`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -31,7 +31,7 @@ export async function fetchCopilotChat(query: string, history: Array<{ user: str
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch copilot chat response");
+    throw new Error("Failed to fetch threat intelligence query response");
   }
 
   return response.json();

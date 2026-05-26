@@ -113,27 +113,27 @@
     animation: float 8s ease-in-out infinite;
   }
 
-  .assistant-container {
+  .intel-panel-container {
     position: relative;
     z-index: 50;
   }
 
-  .assistant-particles {
+  .intel-panel-particles {
     position: absolute;
     inset: auto auto 0 0;
     width: 100%;
     height: 100%;
   }
 
-  .assistant-particle {
+  .intel-panel-particle {
     position: absolute;
     border-radius: 9999px;
     background: radial-gradient(circle, rgba(255, 0, 60, 0.85) 0%, rgba(255, 0, 60, 0.08) 70%);
     opacity: 0.65;
-    animation: assistant-float 10s ease-in-out infinite;
+    animation: intel-panel-float 10s ease-in-out infinite;
   }
 
-  .assistant-response-glow {
+  .intel-response-glow {
     box-shadow: 0 0 28px rgba(255, 0, 60, 0.18);
     border-color: rgba(255, 0, 60, 0.35);
   }
@@ -212,23 +212,23 @@
     100% { transform: translateX(-50%); }
   }
 
-  .assistant-orb {
+  .security-orb {
     position: relative;
     overflow: visible;
   }
 
-  .assistant-orb-ring {
+  .security-orb-ring {
     animation: orb-ring 3s linear infinite;
   }
 
-  .assistant-panel {
+  .intel-panel {
     border-radius: 1.5rem;
     background: rgba(9, 7, 12, 0.92);
     backdrop-filter: blur(22px);
     border: 1px solid rgba(255, 0, 60, 0.22);
   }
 
-  .assistant-chip {
+  .intel-chip {
     box-shadow: 0 0 18px rgba(255, 0, 60, 0.12);
   }
 
@@ -244,7 +244,7 @@
     animation-delay: 0.22s;
   }
 
-  @keyframes assistant-float {
+  @keyframes intel-panel-float {
     0%, 100% { transform: translateY(0) scale(1); opacity: 0.55; }
     50% { transform: translateY(-6px) scale(1.05); opacity: 0.8; }
   }

@@ -66,7 +66,7 @@ const ResultPanel = ({ result, loading }: { result: RiskResult | null; loading: 
           <span className="text-3xl animate-pulse">🛡️</span>
         </div>
         <div className="text-center space-y-1">
-          <p className="text-red-500 font-mono text-sm font-bold tracking-wider animate-pulse">MILITARY-GRADE AI SCAN IN PROGRESS...</p>
+          <p className="text-red-500 font-mono text-sm font-bold tracking-wider animate-pulse">MILITARY-GRADE THREAT SCAN IN PROGRESS...</p>
           <p className="text-xs text-gray-500 font-mono">Correlating threat vectors & deep darknet telemetry</p>
         </div>
       </div>
@@ -77,7 +77,7 @@ const ResultPanel = ({ result, loading }: { result: RiskResult | null; loading: 
     return (
       <div className="flex flex-col items-center justify-center py-16 text-gray-600 space-y-3">
         <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center text-3xl bg-white/5 shadow-[0_0_20px_rgba(255,255,255,0.02)]">🛡️</div>
-        <p className="font-mono text-sm text-gray-500">Submit data above to begin AI warfare analysis</p>
+        <p className="font-mono text-sm text-gray-500">Submit data above to begin threat analysis</p>
       </div>
     );
   }
@@ -118,7 +118,7 @@ const ResultPanel = ({ result, loading }: { result: RiskResult | null; loading: 
         <SeverityBadge level={severity} />
         <div className="flex items-center gap-2 text-xs font-mono text-gray-400 font-bold">
           <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse inline-block shadow-[0_0_8px_rgba(255,0,60,0.8)]" />
-          AI CONFIDENCE: <span className="text-red-400">{asNumber(res?.['ai_confidence'], 96)}%</span>
+          SYSTEM CONFIDENCE: <span className="text-red-400">{asNumber(res?.['ai_confidence'], 96)}%</span>
         </div>
       </div>
 
@@ -228,7 +228,7 @@ const ResultPanel = ({ result, loading }: { result: RiskResult | null; loading: 
 
       {/* Recommendations */}
       <div className="space-y-2 bg-white/5 border border-white/10 rounded-xl p-4">
-        <p className="text-xs text-gray-400 font-mono uppercase tracking-wider font-bold">AI Recommendations</p>
+        <p className="text-xs text-gray-400 font-mono uppercase tracking-wider font-bold">Security Recommendations</p>
         <ul className="space-y-2">
           {recommendations.map((rec: string, i: number) => (
             <li key={i} className="flex items-start gap-2.5 text-xs font-mono text-gray-300 bg-white/5 p-2 rounded-lg border border-white/5">
@@ -349,7 +349,7 @@ export default function DeviceAnalyzer() {
           <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-[0_0_15px_rgba(255,0,60,0.8)]" />
           Device Intelligence & Threat Scanner
         </h1>
-        <p className="text-sm text-gray-400 font-mono">Military-grade AI threat correlation — scan hosts, URLs, and mobile endpoints</p>
+        <p className="text-sm text-gray-400 font-mono">Military-grade threat correlation — scan hosts, URLs, and mobile endpoints</p>
       </div>
 
       {/* Tabs */}
@@ -442,7 +442,7 @@ export default function DeviceAnalyzer() {
             disabled={loading}
             className="w-full mt-4 px-8 py-4 bg-red-500/20 border border-red-500 text-red-400 font-mono text-sm tracking-widest font-bold rounded-xl hover:bg-red-500/30 transition-all shadow-[0_0_20px_rgba(255,0,60,0.2)] hover:shadow-[0_0_35px_rgba(255,0,60,0.4)] disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
           >
-            {loading ? '⚡ CORRELATING TELEMETRY...' : '⚡ EXECUTE AI WARFARE SCAN'}
+            {loading ? '⚡ CORRELATING TELEMETRY...' : '⚡ EXECUTE WARFARE SCAN'}
           </button>
         </div>
 
@@ -450,7 +450,7 @@ export default function DeviceAnalyzer() {
         <div className="bg-[#14040a] border border-red-500/20 rounded-2xl p-8 shadow-[0_0_40px_rgba(255,0,60,0.1)] backdrop-blur-xl">
           <h2 className="text-xs font-mono text-red-500 uppercase tracking-widest mb-6 flex items-center gap-2 font-bold">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-            AI SCANNER TELEMETRY OUTPUT
+            SCANNER TELEMETRY OUTPUT
           </h2>
           <ResultPanel result={result} loading={loading} />
         </div>

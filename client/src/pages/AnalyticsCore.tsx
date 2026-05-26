@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const AIAnalyticsCore: React.FC = () => {
+const AnalyticsCore: React.FC = () => {
   const [anomalyScore] = useState(14.2);
   const [leakRisk] = useState(28.5);
   const [activeMitigations] = useState([
@@ -12,7 +12,7 @@ const AIAnalyticsCore: React.FC = () => {
   return (
     <div className="space-y-6 font-sans text-gray-300">
       <div>
-        <h1 className="text-2xl font-bold text-white mb-1 font-mono">AI Analytics Core</h1>
+        <h1 className="text-2xl font-bold text-white mb-1 font-mono">Analytics Core</h1>
         <p className="text-sm text-gray-500 font-mono">Autonomous security recommendations & behavioral anomaly telemetry</p>
       </div>
 
@@ -55,7 +55,7 @@ const AIAnalyticsCore: React.FC = () => {
           </p>
         </div>
 
-        {/* Autonomous Mitigation Assistant */}
+        {/* Autonomous Mitigation Hub */}
         <div className="glass-panel p-6 space-y-4 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-colors pointer-events-none" />
           <h2 className="text-sm font-semibold text-white font-mono uppercase tracking-wider flex items-center gap-2">
@@ -70,7 +70,7 @@ const AIAnalyticsCore: React.FC = () => {
             <div className="h-full bg-purple-500 rounded w-[99.4%]" />
           </div>
           <p className="text-xs text-gray-400 font-mono leading-relaxed">
-            AI copilot actively deploying real-time kernel-level firewall rules and scrubbing policies.
+            Threat intelligence systems actively deploying real-time kernel-level firewall rules and scrubbing policies.
           </p>
         </div>
       </div>
@@ -82,7 +82,7 @@ const AIAnalyticsCore: React.FC = () => {
             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
             Active Automated Mitigations
           </h2>
-          <span className="text-xs font-mono text-cyan-400">AI COPILOT v4.0</span>
+          <span className="text-xs font-mono text-cyan-400">THREAT INTEL v4.0</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono">
           {activeMitigations.map(mit => (
@@ -101,11 +101,11 @@ const AIAnalyticsCore: React.FC = () => {
         </div>
       </div>
 
-      {/* AI Security Recommendations */}
+      {/* Security Recommendations */}
       <div className="glass-panel p-6 space-y-4">
         <h2 className="text-base font-semibold text-white font-mono flex items-center gap-2 mb-4 border-b border-white/10 pb-4">
           <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
-          AI Security Recommendations & Mitigation Advice
+          Security Recommendations & Mitigation Advice
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
           {[
@@ -127,4 +127,4 @@ const AIAnalyticsCore: React.FC = () => {
   );
 };
 
-export default AIAnalyticsCore;
+export default AnalyticsCore;

@@ -2,7 +2,7 @@ import React, { type ReactNode } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { FiActivity, FiShield, FiMap, FiServer, FiCpu, FiTrendingUp, FiCheckCircle } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import FloatingAssistant from '../components/FloatingAssistant';
+import ThreatAnalysisPanel from '../components/ThreatAnalysisPanel';
 
 interface LayoutProps {
   children: ReactNode;
@@ -31,9 +31,9 @@ const NAV_ITEMS = [
   { path: '/intrusion',           label: 'Neural Intrusion',     icon: <FiShield size={18} />,      desc: 'Attack pattern matrix' },
   { path: '/radar',               label: 'Quantum Radar',        icon: <FiMap size={18} />,         desc: 'Global threat sweep' },
   { path: '/darknet',             label: 'Darknet Signals',      icon: <FiServer size={18} />,      desc: 'Underground tor scraper' },
-  { path: '/device-intelligence', label: 'Device Intelligence',  icon: <FiCpu size={18} />,         desc: 'AI device & IP scanner' },
+  { path: '/device-intelligence', label: 'Device Intelligence',  icon: <FiCpu size={18} />,         desc: 'Device & IP scanner' },
   { path: '/threat-lab',          label: 'Threat Prediction Lab',icon: <FiTrendingUp size={18} />,  desc: 'ML forecasting & curves' },
-  { path: '/ai-analytics',        label: 'AI Analytics Core',    icon: <FiCheckCircle size={18} />, desc: 'Autonomous copilot advice' },
+  { path: '/analytics-core',      label: 'Analytics Core',    icon: <FiCheckCircle size={18} />, desc: 'Autonomous threat intelligence analytics' },
 ];
 
 const CommandCenterLayout: React.FC<LayoutProps> = ({ children }) => {
@@ -146,7 +146,7 @@ const CommandCenterLayout: React.FC<LayoutProps> = ({ children }) => {
             {children}
           </motion.div>
         </main>
-        <FloatingAssistant />
+        <ThreatAnalysisPanel />
       </div>
     </div>
   );

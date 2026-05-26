@@ -1,6 +1,6 @@
 # RAG Architecture
 
-DANGEN includes an AI Copilot retrieval system built for enterprise-grade intelligence augmentation.
+DANGEN includes a threat intelligence retrieval system built for enterprise-grade intelligence augmentation.
 
 ## Key features
 

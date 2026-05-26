@@ -518,7 +518,7 @@ const ThreatMap: React.FC = () => {
                 <div className="flex justify-between"><span className="text-gray-500">Source Country:</span><span className="text-white font-bold">{selectedEvent.source_country || selectedEvent.country || 'UNKNOWN'}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Packet Velocity:</span><span className="text-red-500 font-bold">{selectedEvent.packets_per_second?.toLocaleString() || 45210} PPS</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Threat Level:</span><span className="text-red-500 font-bold">{selectedEvent.threat_level || selectedEvent.severity.toUpperCase()}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">AI Confidence:</span><span className="text-green-400 font-bold">{selectedEvent.confidence}%</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Confidence:</span><span className="text-green-400 font-bold">{selectedEvent.confidence}%</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Timestamp:</span><span className="text-gray-400">{selectedEvent.timestamp}</span></div>
               </div>
 

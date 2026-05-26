@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FiSend, FiShield, FiZap, FiX } from 'react-icons/fi';
-import AssistantOrb from './AssistantOrb';
-import AssistantMessage from './AssistantMessage';
+import SecurityOrb from './SecurityOrb';
+import ResponseMessage from './ResponseMessage';
 import TypingIndicator from './TypingIndicator';
-import { fetchCopilotChat } from '../services/api';
+import { fetchIntelligenceQuery } from '../services/api';
 
 interface ChatEntry {
-  role: 'assistant' | 'user' | 'system';
+  role: 'core' | 'user' | 'system';
   text: string;
   time: string;
   severity?: 'low' | 'medium' | 'high' | 'critical';
@@ -15,8 +15,8 @@ interface ChatEntry {
 
 const defaultMessages: ChatEntry[] = [
   {
-    role: 'assistant',
-    text: 'DANGEN Copilot online. I can explain attacks, review alerts, and help validate IP reputation.',
+    role: 'core',
+    text: 'DANGEN Threat Intelligence Panel online. I can explain attacks, review alerts, and help validate IP reputation.',
     time: '00:00',
     severity: 'low',
   },
@@ -29,7 +29,7 @@ const suggestionQueries = [
   { label: 'Use dashboard guidance', value: 'How do I interpret the threat map and live risk scores?' },
 ];
 
-const FloatingAssistant: React.FC = () => {
+const ThreatAnalysisPanel: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatEntry[]>(defaultMessages);
   const [draft, setDraft] = useState('Explain the current threat posture.');
@@ -48,7 +48,7 @@ const FloatingAssistant: React.FC = () => {
         lastUser = item.text;
       }
 
-      if (item.role === 'assistant' && lastUser) {
+      if (item.role === 'core' && lastUser) {
         pairs.push({ user: lastUser, assistant: item.text });
         lastUser = '';
       }
@@ -59,7 +59,7 @@ const FloatingAssistant: React.FC = () => {
 
   const contextualSuggestions = useMemo(() => {
     const last = messages[messages.length - 1];
-    if (last?.role === 'assistant' && last.text.includes('threat')) {
+    if (last?.role === 'core' && last.text.includes('threat')) {
       return [
         suggestionQueries[1],
         suggestionQueries[2],
@@ -90,7 +90,7 @@ const FloatingAssistant: React.FC = () => {
         const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         setMessages((current) => [
           ...current,
-          { role: 'assistant', text: pendingText, time, severity: 'high' },
+          { role: 'core', text: pendingText, time, severity: 'high' },
         ]);
         setPendingText('');
         setLoading(false);
@@ -117,11 +117,11 @@ const FloatingAssistant: React.FC = () => {
     setStreamingText('');
 
     try {
-      const result = await fetchCopilotChat(messageText, history);
-      const assistantText = result?.response || 'Intelligence retrieval failed. Please try again.';
-      setPendingText(assistantText);
+      const result = await fetchIntelligenceQuery(messageText, history);
+      const coreText = result?.response || 'Intelligence retrieval failed. Please try again.';
+      setPendingText(coreText);
     } catch (err) {
-      const fallback = 'Unable to connect to the COPILOT backend. Review network and try again.';
+      const fallback = 'Unable to connect to the intelligence backend. Review network and try again.';
       setError(typeof err === 'string' ? err : fallback);
       setLoading(false);
     }
@@ -137,11 +137,11 @@ const FloatingAssistant: React.FC = () => {
     : 'shadow-[0_0_20px_rgba(0,0,0,0.25)]';
 
   return (
-    <div className="assistant-container">
-      <div className="assistant-particles pointer-events-none">
-        <span className="assistant-particle h-3 w-3 left-4 top-6" />
-        <span className="assistant-particle h-4 w-4 left-14 top-10" />
-        <span className="assistant-particle h-2 w-2 right-14 top-4" />
+    <div className="intel-panel-container">
+      <div className="intel-panel-particles pointer-events-none">
+        <span className="intel-panel-particle h-3 w-3 left-4 top-6" />
+        <span className="intel-panel-particle h-4 w-4 left-14 top-10" />
+        <span className="intel-panel-particle h-2 w-2 right-14 top-4" />
       </div>
 
       <motion.div
@@ -156,7 +156,7 @@ const FloatingAssistant: React.FC = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 24, scale: 0.96 }}
               transition={{ duration: 0.22, ease: 'easeOut' }}
-              className={`assistant-panel glass-panel w-[360px] max-w-full pointer-events-auto overflow-hidden border-red-500/20 ${panelClasses}`}
+              className={`intel-panel glass-panel w-[360px] max-w-full pointer-events-auto overflow-hidden border-red-500/20 ${panelClasses}`}
             >
               <div className="relative overflow-hidden bg-[#09080e]/95 px-4 py-4">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,0,60,0.18),transparent_45%)] pointer-events-none" />
@@ -165,9 +165,9 @@ const FloatingAssistant: React.FC = () => {
                   <div>
                     <div className="flex items-center gap-2 text-xs uppercase tracking-[0.35em] text-red-300 font-semibold font-mono">
                       <FiShield size={14} />
-                      DANGEN AI Assistant
+                      DANGEN Threat Intelligence Panel
                     </div>
-                    <p className="text-[11px] text-gray-400 mt-1">RAG-powered cyber analysis ready to assist.</p>
+                    <p className="text-[11px] text-gray-400 mt-1">Secure analysis pipeline ready to assist.</p>
                   </div>
                   <button
                     type="button"
@@ -181,32 +181,32 @@ const FloatingAssistant: React.FC = () => {
 
               <div className="max-h-[440px] overflow-hidden">
                 <div className="px-4 py-3 border-b border-white/10 bg-[#08070c]/90">
-                  <p className="text-[11px] uppercase tracking-[0.35em] text-gray-500 font-mono">Live assistance</p>
+                  <p className="text-[11px] uppercase tracking-[0.35em] text-gray-500 font-mono">Live threat briefing</p>
                 </div>
                 <div className="max-h-[260px] overflow-y-auto px-4 py-4 space-y-3 custom-scrollbar">
                   <AnimatePresence initial={false}>
                     {messages.map((message, index) => (
-                      <AssistantMessage
+                      <ResponseMessage
                         key={`${message.role}-${index}-${message.time}`}
                         role={message.role}
                         text={message.text}
                         time={message.time}
-                        severity={message.role === 'assistant' ? message.severity : undefined}
+                        severity={message.role === 'core' ? message.severity : undefined}
                       />
                     ))}
                     {loading && !streamingText ? (
-                      <AssistantMessage
-                        key="assistant-loading"
-                        role="assistant"
+                      <ResponseMessage
+                        key="core-loading"
+                        role="core"
                         text="Composing intelligent risk analysis..."
                         time="--:--"
                         severity="medium"
                       />
                     ) : null}
                     {pendingText ? (
-                      <AssistantMessage
-                        key="assistant-streaming"
-                        role="assistant"
+                      <ResponseMessage
+                        key="core-streaming"
+                        role="core"
                         text={streamingText}
                         time="--:--"
                         severity="high"
@@ -223,7 +223,7 @@ const FloatingAssistant: React.FC = () => {
                         key={item.label}
                         type="button"
                         onClick={() => handleQuickAction(item.value)}
-                        className="assistant-chip rounded-full border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-200 transition hover:bg-red-500/20"
+                        className="intel-chip rounded-full border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-200 transition hover:bg-red-500/20"
                       >
                         {item.label}
                       </button>
@@ -234,7 +234,7 @@ const FloatingAssistant: React.FC = () => {
                       <input
                         value={draft}
                         onChange={(event) => setDraft(event.target.value)}
-                        placeholder="Ask the Copilot a cyber question..."
+                        placeholder="Ask the Threat Intelligence Panel a cyber question..."
                         className="w-full rounded-3xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/15"
                       />
                     </div>
@@ -250,7 +250,7 @@ const FloatingAssistant: React.FC = () => {
                   <div className="mt-3 flex items-center justify-between text-xs text-gray-500 font-mono">
                     <span>{loading ? <TypingIndicator /> : 'Ready for secure analysis.'}</span>
                     <span className="inline-flex items-center gap-1 text-red-300">
-                      <FiZap size={12} /> RAG Enabled
+                      <FiZap size={12} /> Secure Feed
                     </span>
                   </div>
                   {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
@@ -260,10 +260,10 @@ const FloatingAssistant: React.FC = () => {
           )}
         </AnimatePresence>
 
-        <AssistantOrb open={open} onClick={() => setOpen((value) => !value)} />
+        <SecurityOrb open={open} onClick={() => setOpen((value) => !value)} />
       </motion.div>
     </div>
   );
 };
 
-export default FloatingAssistant;
+export default ThreatAnalysisPanel;

@@ -1,6 +1,6 @@
-# AI Copilot
+# Threat Intelligence
 
-The DANGEN AI Copilot is a retrieval-driven threat intelligence assistant designed to augment decision-making with security best practices.
+The DANGEN Threat Intelligence Engine is a retrieval-driven threat intelligence assistant designed to augment decision-making with security best practices.
 
 ## Implementation
 
@@ -17,7 +17,7 @@ The DANGEN AI Copilot is a retrieval-driven threat intelligence assistant design
 - If the semantic stack fails to initialize, the pipeline automatically falls back to a pure Python keyword vector store.
 - The fallback store still provides retrieval quality by leveraging tokenized document vectors, cosine similarity, and title matching boosts.
 
-## Copilot behavior
+## Threat intelligence behavior
 
 - The retrieval engine returns a list of relevant documents with:
   - `title`

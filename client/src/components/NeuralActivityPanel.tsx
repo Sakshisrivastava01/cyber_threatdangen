@@ -42,7 +42,7 @@ const NeuralActivityPanel: FC<NeuralActivityPanelProps> = ({ values }) => {
           <div className="text-white font-semibold mt-1">8/8 ACTIVE</div>
         </div>
         <div className="bg-black/30 rounded border border-red-500/10 p-3">
-          <div className="text-[8px] uppercase tracking-[0.35em] text-red-300">AI THREAT SCORE</div>
+          <div className="text-[8px] uppercase tracking-[0.35em] text-red-300">THREAT SCORE</div>
           <div className="text-white font-semibold mt-1">97.4%</div>
         </div>
       </div>

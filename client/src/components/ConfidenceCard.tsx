@@ -1,12 +1,12 @@
 import React from 'react';
 
-interface AIConfidenceCardProps {
+interface ConfidenceCardProps {
   title: string;
   value: string;
   status: 'Secure' | 'Alert';
 }
 
-const AIConfidenceCard: React.FC<AIConfidenceCardProps> = ({ title, value, status }) => {
+const ConfidenceCard: React.FC<ConfidenceCardProps> = ({ title, value, status }) => {
   const isSecure = status === 'Secure';
   
   return (
@@ -33,4 +33,4 @@ const AIConfidenceCard: React.FC<AIConfidenceCardProps> = ({ title, value, statu
   );
 };
 
-export default AIConfidenceCard;
+export default ConfidenceCard;

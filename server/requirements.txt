@@ -12,3 +12,5 @@ langchain>=0.0.450
 faiss-cpu>=1.7.4
 sentence-transformers>=2.2.2
 transformers>=4.40.0
+twilio>=8.0.0
+resend>=0.7.0

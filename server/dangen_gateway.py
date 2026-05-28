@@ -15,6 +15,7 @@ import asyncio, random, json
 from api.threat_routes import router as threat_router
 from api.intelligence_routes import router as intelligence_router
 from api.ml_routes import router as ml_router
+from api.auth_routes import router as auth_router
 from live_threat_stream.live_stream_manager import neural_stream
 from ml_engine.threat_predictor import predict_threat, detect_anomalies
 from device_intelligence.risk_engine import analyze_ip, analyze_url, analyze_mobile_risk
@@ -39,6 +40,7 @@ register_exception_handlers(app)
 app.include_router(threat_router, prefix="/api")
 app.include_router(intelligence_router, prefix="/api")
 app.include_router(ml_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
 
 # ─── Pydantic request models ─────────────────────────────────────────────────
 class ThreatFeatures(BaseModel):

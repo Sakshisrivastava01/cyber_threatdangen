@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   FiShield,
@@ -9,6 +9,8 @@ import {
   FiArrowRight,
   FiMenu,
   FiX,
+  FiUploadCloud,
+  FiLoader,
 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,9 +37,7 @@ const FEATURE_CARDS = [
     icon: FiBarChart2,
   },
 ];
-const AVATAR_OPTIONS = ['A', 'B', 'C', 'D'];
-const EMAIL_OTP = '741852';
-const MOBILE_OTP = '369258';
+
 const HERO_LABEL = 'AI POWERED CYBER DEFENSE';
 const HERO_TITLE = 'DANGEN';
 const DESCRIPTION = 'Detect. Analyze. Neutralize. DANGEN protects your digital world with real-time threat intelligence and autonomous defense.';
@@ -54,24 +54,74 @@ const particleMap = [
   { top: '10%', left: '84%', size: 1.7, opacity: 0.16, delay: 1.2 },
 ];
 
+const OtpInputGroup = ({ length = 6, value, onChange, disabled = false }: { length?: number, value: string[], onChange: (v: string[]) => void, disabled?: boolean }) => {
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const handleChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (/[^0-9]/.test(val)) return; // numbers only
+    const newOtp = [...value];
+    newOtp[index] = val.substring(val.length - 1);
+    onChange(newOtp);
+
+    if (val && index < length - 1) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !value[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  return (
+    <div className="flex gap-2 justify-center">
+      {value.map((digit, index) => (
+        <input
+          key={index}
+          ref={(el) => (inputRefs.current[index] = el)}
+          type="text"
+          inputMode="numeric"
+          maxLength={1}
+          disabled={disabled}
+          value={digit}
+          onChange={(e) => handleChange(index, e)}
+          onKeyDown={(e) => handleKeyDown(index, e)}
+          className="w-10 h-14 sm:w-12 sm:h-16 text-center rounded-xl border border-white/10 bg-[#070708]/90 text-xl font-bold text-white outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-500/20 disabled:opacity-50"
+        />
+      ))}
+    </div>
+  );
+};
+
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [, setProgress] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [modalType, setModalType] = useState<'login' | 'signup' | null>(null);
   const [signupStage, setSignupStage] = useState<'form' | 'emailOtp' | 'mobileOtp' | 'completed'>('form');
+  
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginRemember, setLoginRemember] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
-  const [signupAvatar, setSignupAvatar] = useState(0);
+
   const [signupFirst, setSignupFirst] = useState('');
   const [signupLast, setSignupLast] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupMobile, setSignupMobile] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
-  const [emailOtpCode, setEmailOtpCode] = useState('');
-  const [mobileOtpCode, setMobileOtpCode] = useState('');
+  
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const [captchaVerified, setCaptchaVerified] = useState(false);
+
+  const [emailOtpArray, setEmailOtpArray] = useState(['', '', '', '', '', '']);
+  const [mobileOtpArray, setMobileOtpArray] = useState(['', '', '', '', '', '']);
+  const [emailCooldown, setEmailCooldown] = useState(0);
+  const [mobileCooldown, setMobileCooldown] = useState(0);
+  const [verifying, setVerifying] = useState(false);
+
   const [verificationError, setVerificationError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -92,6 +142,20 @@ const LandingPage: React.FC = () => {
     return () => window.clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (emailCooldown > 0) {
+      const t = setTimeout(() => setEmailCooldown(c => c - 1), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [emailCooldown]);
+
+  useEffect(() => {
+    if (mobileCooldown > 0) {
+      const t = setTimeout(() => setMobileCooldown(c => c - 1), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [mobileCooldown]);
+
   const openLoginModal = () => {
     setModalType('login');
     setSignupStage('form');
@@ -104,6 +168,10 @@ const LandingPage: React.FC = () => {
     setSignupStage('form');
     setVerificationError('');
     setSuccessMessage('');
+    setProfilePreview(null);
+    setCaptchaVerified(false);
+    setEmailOtpArray(['', '', '', '', '', '']);
+    setMobileOtpArray(['', '', '', '', '', '']);
   };
 
   const closeModal = () => {
@@ -124,33 +192,114 @@ const LandingPage: React.FC = () => {
     }, 900);
   };
 
-  const handleSignupSubmit = () => {
-    setSignupStage('emailOtp');
-    setVerificationError('');
-  };
-
-  const handleVerifyEmailOtp = () => {
-    if (emailOtpCode.trim() === EMAIL_OTP) {
-      setSignupStage('mobileOtp');
-      setVerificationError('');
-    } else {
-      setVerificationError('Invalid email OTP. Please try again.');
+  const handleFileDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setProfilePreview(URL.createObjectURL(e.dataTransfer.files[0]));
     }
   };
 
-  const handleVerifyMobileOtp = () => {
-    if (mobileOtpCode.trim() === MOBILE_OTP) {
-      setSignupStage('completed');
-      setVerificationError('');
-      window.setTimeout(() => {
-        setModalType('login');
-        setSignupStage('form');
-        setSuccessMessage('Account created. Please login to continue.');
-        setEmailOtpCode('');
-        setMobileOtpCode('');
-      }, 1200);
-    } else {
-      setVerificationError('Invalid mobile OTP. Please try again.');
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProfilePreview(URL.createObjectURL(e.target.files[0]));
+    }
+  };
+
+  const sendEmailOTP = async () => {
+    try {
+      await fetch('http://localhost:8000/api/auth/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: signupEmail })
+      });
+      setEmailCooldown(60);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const sendMobileOTP = async () => {
+    try {
+      await fetch('http://localhost:8000/api/auth/send-sms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: signupMobile })
+      });
+      setMobileCooldown(60);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSignupSubmit = async () => {
+    if (!signupFirst || !signupEmail || !signupPassword || !signupMobile) {
+      setVerificationError('Please fill in all required fields.');
+      return;
+    }
+    if (!captchaVerified) {
+      setVerificationError('Please complete Neural Captcha verification.');
+      return;
+    }
+    setVerificationError('');
+    setVerifying(true);
+    await sendEmailOTP();
+    setVerifying(false);
+    setSignupStage('emailOtp');
+  };
+
+  const handleVerifyEmailOtp = async () => {
+    const code = emailOtpArray.join('');
+    if (code.length !== 6) return;
+    setVerifying(true);
+    try {
+      const res = await fetch('http://localhost:8000/api/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target: signupEmail, code })
+      });
+      if (res.ok) {
+        setVerificationError('');
+        await sendMobileOTP();
+        setSignupStage('mobileOtp');
+      } else {
+        const data = await res.json();
+        setVerificationError(data.detail || 'Invalid email OTP. Please try again.');
+      }
+    } catch (err) {
+      setVerificationError('Verification service unavailable.');
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const handleVerifyMobileOtp = async () => {
+    const code = mobileOtpArray.join('');
+    if (code.length !== 6) return;
+    setVerifying(true);
+    try {
+      const res = await fetch('http://localhost:8000/api/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target: signupMobile, code })
+      });
+      if (res.ok) {
+        setVerificationError('');
+        setSignupStage('completed');
+        window.setTimeout(() => {
+          setModalType('login');
+          setSignupStage('form');
+          setSuccessMessage('Account created and verified. Please login to continue.');
+          setEmailOtpArray(['', '', '', '', '', '']);
+          setMobileOtpArray(['', '', '', '', '', '']);
+        }, 2000);
+      } else {
+        const data = await res.json();
+        setVerificationError(data.detail || 'Invalid mobile OTP. Please try again.');
+      }
+    } catch (err) {
+      setVerificationError('Verification service unavailable.');
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -383,7 +532,7 @@ const LandingPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="relative w-full max-w-3xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#080708]/95 p-6 shadow-[0_40px_150px_rgba(0,0,0,0.4)] backdrop-blur-2xl"
+            className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar rounded-[2rem] border border-white/10 bg-[#080708]/95 p-6 shadow-[0_40px_150px_rgba(0,0,0,0.4)] backdrop-blur-2xl"
           >
             <button
               type="button"
@@ -464,18 +613,25 @@ const LandingPage: React.FC = () => {
                     {signupStage === 'form' && (
                       <>
                         <div>
-                          <p className="text-sm uppercase tracking-[0.22em] text-gray-400">Select avatar</p>
-                          <div className="mt-3 flex flex-wrap gap-3">
-                            {AVATAR_OPTIONS.map((avatar, index) => (
-                              <button
-                                key={avatar}
-                                type="button"
-                                onClick={() => setSignupAvatar(index)}
-                                className={`flex h-12 w-12 items-center justify-center rounded-2xl border px-3 text-xl font-semibold transition ${signupAvatar === index ? 'border-red-400 bg-red-500/15 text-red-200' : 'border-white/10 bg-[#09090c] text-gray-200'}`}
-                              >
-                                {avatar}
-                              </button>
-                            ))}
+                          <p className="text-sm uppercase tracking-[0.22em] text-gray-400">Add your profile photo</p>
+                          <div 
+                            className="mt-3 relative w-24 h-24 rounded-full border-2 border-dashed border-white/20 bg-white/5 flex items-center justify-center cursor-pointer transition hover:border-red-400 hover:shadow-[0_0_20px_rgba(255,0,60,0.3)] overflow-hidden"
+                            onDragOver={handleFileDrop}
+                            onDrop={handleFileDrop}
+                            onClick={() => document.getElementById('profileUpload')?.click()}
+                          >
+                            {profilePreview ? (
+                              <img src={profilePreview} alt="Profile preview" className="w-full h-full object-cover" />
+                            ) : (
+                              <FiUploadCloud className="w-8 h-8 text-gray-400" />
+                            )}
+                            <input 
+                              type="file" 
+                              id="profileUpload" 
+                              className="hidden" 
+                              accept="image/*" 
+                              onChange={handleFileSelect} 
+                            />
                           </div>
                         </div>
                         <div className="grid gap-4 sm:grid-cols-2">
@@ -530,72 +686,105 @@ const LandingPage: React.FC = () => {
                             className="mt-3 w-full rounded-3xl border border-white/10 bg-[#070708]/90 px-4 py-3 text-sm text-white outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
                           />
                         </label>
+                        
+                        <div className="flex items-center gap-3 p-4 rounded-2xl border border-white/10 bg-[#070708]/50">
+                          <input 
+                            type="checkbox" 
+                            id="captcha" 
+                            checked={captchaVerified}
+                            onChange={(e) => setCaptchaVerified(e.target.checked)}
+                            className="w-5 h-5 accent-red-500 rounded border-gray-500 bg-[#070708]" 
+                          />
+                          <label htmlFor="captcha" className="text-sm text-gray-300 flex-1 cursor-pointer">I am human (Neural Captcha)</label>
+                          <FiShield className="text-red-400 opacity-50" />
+                        </div>
+
+                        {verificationError && <p className="text-sm text-red-300">{verificationError}</p>}
+                        
                         <button
                           type="button"
+                          disabled={verifying}
                           onClick={handleSignupSubmit}
-                          className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#ff2b45] via-[#ff4a6d] to-[#ff8fa6] px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-[0_18px_60px_rgba(255,43,69,0.24)] transition duration-200 hover:-translate-y-0.5"
+                          className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#ff2b45] via-[#ff4a6d] to-[#ff8fa6] px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-[0_18px_60px_rgba(255,43,69,0.24)] transition duration-200 hover:-translate-y-0.5 disabled:opacity-70"
                         >
-                          Continue to verification
+                          {verifying ? <FiLoader className="animate-spin w-5 h-5" /> : 'Continue to verification'}
                         </button>
                       </>
                     )}
 
                     {signupStage === 'emailOtp' && (
-                      <>
-                        <p className="text-sm text-gray-300">We sent an OTP to {signupEmail || 'your email address'}.</p>
-                        <label className="block text-sm uppercase tracking-[0.22em] text-gray-400">
-                          Email OTP
-                          <input
-                            type="text"
-                            value={emailOtpCode}
-                            onChange={(event) => setEmailOtpCode(event.target.value)}
-                            placeholder="Enter OTP code"
-                            className="mt-3 w-full rounded-3xl border border-white/10 bg-[#070708]/90 px-4 py-3 text-sm text-white outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
-                          />
-                        </label>
-                        {verificationError && <p className="text-sm text-red-300">{verificationError}</p>}
+                      <motion.div initial={{opacity:0}} animate={{opacity:1}} className="space-y-6">
+                        <p className="text-sm text-gray-300 text-center">We sent an OTP to <span className="font-semibold text-white">{signupEmail}</span></p>
+                        
+                        <OtpInputGroup length={6} value={emailOtpArray} onChange={setEmailOtpArray} disabled={verifying} />
+                        
+                        {verificationError && <p className="text-sm text-red-300 text-center">{verificationError}</p>}
+                        
                         <button
                           type="button"
+                          disabled={verifying || emailOtpArray.join('').length !== 6}
                           onClick={handleVerifyEmailOtp}
-                          className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#ff2b45] via-[#ff4a6d] to-[#ff8fa6] px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-[0_18px_60px_rgba(255,43,69,0.24)] transition duration-200 hover:-translate-y-0.5"
+                          className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#ff2b45] via-[#ff4a6d] to-[#ff8fa6] px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-[0_18px_60px_rgba(255,43,69,0.24)] transition duration-200 hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                          Verify email OTP
+                          {verifying ? <FiLoader className="animate-spin w-5 h-5" /> : 'Verify Email'}
                         </button>
-                      </>
+
+                        <div className="text-center">
+                          <button 
+                            type="button" 
+                            disabled={emailCooldown > 0} 
+                            onClick={sendEmailOTP}
+                            className="text-sm font-medium text-red-300 transition hover:text-white disabled:text-gray-500 disabled:hover:text-gray-500"
+                          >
+                            {emailCooldown > 0 ? `Resend OTP in ${emailCooldown}s` : 'Resend OTP'}
+                          </button>
+                        </div>
+                      </motion.div>
                     )}
 
                     {signupStage === 'mobileOtp' && (
-                      <>
-                        <p className="text-sm text-gray-300">Now verify your mobile number: {signupMobile || '+...'}.</p>
-                        <label className="block text-sm uppercase tracking-[0.22em] text-gray-400">
-                          Mobile OTP
-                          <input
-                            type="text"
-                            value={mobileOtpCode}
-                            onChange={(event) => setMobileOtpCode(event.target.value)}
-                            placeholder="Enter OTP code"
-                            className="mt-3 w-full rounded-3xl border border-white/10 bg-[#070708]/90 px-4 py-3 text-sm text-white outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
-                          />
-                        </label>
-                        {verificationError && <p className="text-sm text-red-300">{verificationError}</p>}
+                      <motion.div initial={{opacity:0}} animate={{opacity:1}} className="space-y-6">
+                        <p className="text-sm text-gray-300 text-center">Now verify your mobile number: <span className="font-semibold text-white">{signupMobile}</span></p>
+                        
+                        <OtpInputGroup length={6} value={mobileOtpArray} onChange={setMobileOtpArray} disabled={verifying} />
+                        
+                        {verificationError && <p className="text-sm text-red-300 text-center">{verificationError}</p>}
+                        
                         <button
                           type="button"
+                          disabled={verifying || mobileOtpArray.join('').length !== 6}
                           onClick={handleVerifyMobileOtp}
-                          className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#ff2b45] via-[#ff4a6d] to-[#ff8fa6] px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-[0_18px_60px_rgba(255,43,69,0.24)] transition duration-200 hover:-translate-y-0.5"
+                          className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#ff2b45] via-[#ff4a6d] to-[#ff8fa6] px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-[0_18px_60px_rgba(255,43,69,0.24)] transition duration-200 hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                          Confirm mobile OTP
+                          {verifying ? <FiLoader className="animate-spin w-5 h-5" /> : 'Confirm Mobile'}
                         </button>
-                      </>
+
+                        <div className="text-center">
+                          <button 
+                            type="button" 
+                            disabled={mobileCooldown > 0} 
+                            onClick={sendMobileOTP}
+                            className="text-sm font-medium text-red-300 transition hover:text-white disabled:text-gray-500 disabled:hover:text-gray-500"
+                          >
+                            {mobileCooldown > 0 ? `Resend OTP in ${mobileCooldown}s` : 'Resend SMS'}
+                          </button>
+                        </div>
+                      </motion.div>
                     )}
 
                     {signupStage === 'completed' && (
-                      <div className="rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-6 text-center text-white">
-                        <div className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 text-3xl text-emerald-200">
+                      <motion.div initial={{scale:0.9, opacity:0}} animate={{scale:1, opacity:1}} className="rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-6 text-center text-white">
+                        <motion.div 
+                          initial={{scale: 0}}
+                          animate={{scale: 1}}
+                          transition={{type:"spring", stiffness:200, damping:10}}
+                          className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 text-3xl text-emerald-200"
+                        >
                           <FiCheckCircle />
-                        </div>
+                        </motion.div>
                         <h3 className="text-xl font-semibold">Signup complete</h3>
-                        <p className="mt-2 text-sm text-gray-200">Your identity is verified. Opening login screen now.</p>
-                      </div>
+                        <p className="mt-2 text-sm text-gray-200">Your identity is verified. Redirecting to login...</p>
+                      </motion.div>
                     )}
                     <div className="border-t border-white/10 pt-4 text-sm text-gray-300">
                       Already have an account?{' '}

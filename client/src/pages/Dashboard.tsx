@@ -1,354 +1,451 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const baseMetrics = [
-  { label: 'Detected Events', target: 8142, trend: '+12.7%', hint: '24h active sensors', suffix: '' },
-  { label: 'Critical Incidents', target: 57, trend: '+4.2%', hint: 'Priority response queue', suffix: '' },
-  { label: 'Threat Coverage', target: 98.4, trend: '+1.9%', hint: 'Global telemetry reach', suffix: '%' },
-  { label: 'Mean Dwell', target: 2.1, trend: '-8.1%', hint: 'Containment performance', suffix: 'h', decimals: 1 },
-];
-
-const regions = [
-  { name: 'Singapore', count: 18, level: 'High' },
-  { name: 'Frankfurt', count: 12, level: 'Elevated' },
-  { name: 'São Paulo', count: 9, level: 'Medium' },
-  { name: 'Toronto', count: 7, level: 'Medium' },
-];
-
-const feedItems = [
-  { time: '00:14:38', title: 'Ransomware payload blocked', source: 'Egress proxy', severity: 'Critical' },
-  { time: '00:12:15', title: 'Unknown process flagged', source: 'Endpoint', severity: 'High' },
-  { time: '00:09:56', title: 'Credentials brute force', source: 'IAM gateway', severity: 'Elevated' },
-  { time: '00:06:42', title: 'Suspicious C2 heartbeat', source: 'Network sensor', severity: 'Critical' },
-];
-
-const alerts = [
-  { id: 'AL-0912', description: 'New phishing kit discovered in inbound mail flow.', severity: 'High' },
-  { id: 'AL-0897', description: 'Data exfiltration attempt from legacy API.', severity: 'Critical' },
-  { id: 'AL-0883', description: 'Anomalous DNS tunneling activity.', severity: 'Elevated' },
-];
-
-const ThreatIndicator = React.memo(() => (
-  <div className="glass-panel overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#07090f]/90 p-5 sm:p-6 transition duration-300 hover:-translate-y-0.5 hover:border-red-400/35">
-    <div className="flex items-start justify-between gap-4">
-      <div>
-        <p className="text-xs uppercase tracking-[0.35em] text-red-300/70">Threat Intelligence</p>
-        <h2 className="mt-3 text-2xl font-semibold text-white">Signal summary</h2>
-      </div>
-      <span className="rounded-full border border-red-500/35 bg-red-500/10 px-3 py-1 text-[11px] uppercase tracking-[0.34em] text-red-200">
-        Pulse
-      </span>
-    </div>
-    <div className="mt-6 space-y-4 text-sm text-gray-300">
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-        <p className="text-sm font-semibold text-white">Threat model confidence</p>
-        <p className="mt-2 text-xs text-gray-400">Deep correlation across endpoint, network, and cloud telemetry.</p>
-      </div>
-      <div className="grid gap-3">
-        <div className="flex items-center justify-between text-xs uppercase tracking-[0.28em] text-gray-400">
-          <span>IOC match rate</span>
-          <span>87%</span>
-        </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
-          <div className="h-full rounded-full bg-gradient-to-r from-red-500 to-[#ff9aa4]" style={{ width: '87%' }} />
-        </div>
-      </div>
-      <div className="grid gap-2 text-sm">
-        <div className="flex items-center justify-between text-gray-300">
-          <span>Malware signatures</span>
-          <strong className="text-red-200">42</strong>
-        </div>
-        <div className="flex items-center justify-between text-gray-300">
-          <span>Active watchlists</span>
-          <strong className="text-red-200">7</strong>
-        </div>
-      </div>
-    </div>
-  </div>
-));
-
-// Small presentational subcomponents memoized to avoid unnecessary re-renders
-interface MetricType { label: string; target: number; trend: string; hint: string; suffix?: string; decimals?: number }
-const MetricCard = React.memo(({ metric, value, progress }: { metric: MetricType; value: number; progress: number }) => (
-  <div className="glass-panel rounded-[1.75rem] border border-white/10 bg-[#070812]/90 p-5 shadow-[0_20px_80px_rgba(0,0,0,0.16)] transition duration-200 hover:-translate-y-0.5 hover:border-red-400/35 hover:bg-white/10">
-    <div className="flex items-center justify-between gap-3">
-      <p className="text-xs uppercase tracking-[0.35em] text-red-300/70">{metric.label}</p>
-      <span className="text-xs text-green-300">{metric.trend}</span>
-    </div>
-    <div className="mt-4 flex items-end justify-between gap-4">
-      <p className="text-3xl font-semibold text-white">{metric.suffix === '%' ? `${value.toFixed(1)}%` : metric.suffix === 'h' ? `${value.toFixed(1)}h` : Math.round(value).toLocaleString()}</p>
-      <div className="h-2 w-16 overflow-hidden rounded-full bg-white/10">
-        <div className="h-full rounded-full bg-gradient-to-r from-red-500 to-[#ff8fa0] shadow-[0_0_18px_rgba(255,0,60,0.35)]" style={{ width: `${progress}%` }} />
-      </div>
-    </div>
-    <p className="mt-3 text-sm text-gray-400">{metric.hint}</p>
-  </div>
-));
-
-const RegionCard = React.memo(({ region }: { region: (typeof regions)[number] }) => (
-  <div className="rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:border-red-400/30 hover:bg-white/10">
-    <div className="flex items-center justify-between gap-2 text-sm text-gray-300">
-      <span>{region.name}</span>
-      <span className="text-red-300">{region.level}</span>
-    </div>
-    <p className="mt-3 text-3xl font-semibold text-white">{region.count}</p>
-  </div>
-));
-
-const FeedItemCard = React.memo(({ item }: { item: (typeof feedItems)[number] }) => (
-  <div className="group rounded-[1.75rem] border border-white/10 bg-white/5 p-4 transition duration-300 hover:border-red-400/40 hover:bg-white/10">
-    <div className="flex items-center justify-between gap-3 text-sm text-gray-400">
-      <span>{item.time}</span>
-      <span className="rounded-full bg-[#18040a] px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-red-200">{item.severity}</span>
-    </div>
-    <p className="mt-3 text-base font-semibold text-white">{item.title}</p>
-    <p className="mt-2 text-sm text-gray-400">{item.source}</p>
-  </div>
-));
-
-const AlertCard = React.memo(({ alert }: { alert: (typeof alerts)[number] }) => (
-  <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-4 transition duration-300 hover:border-red-400/40 hover:bg-white/10">
-    <div className="flex items-center justify-between gap-3">
-      <div>
-        <p className="text-sm font-semibold text-white">{alert.id}</p>
-        <p className="mt-1 text-sm text-gray-400">{alert.description}</p>
-      </div>
-      <span className="rounded-full bg-red-500/15 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-red-200">{alert.severity}</span>
-    </div>
-  </div>
-));
-
 const Dashboard: React.FC = () => {
-  const navigate = useNavigate();
-  const [counts, setCounts] = useState<number[]>(baseMetrics.map(() => 0));
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const user = useMemo(
-    () =>
-      window.localStorage.getItem('dangen_user') ||
-      window.sessionStorage.getItem('dangen_user') ||
-      'operator@dangen.io',
-    []
-  );
+    const navigate = useNavigate();
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [currentTime, setCurrentTime] = useState(new Date());
 
-  useEffect(() => {
-    const timeInterval = window.setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => window.clearInterval(timeInterval);
-  }, []);
+    const user = useMemo(
+        () =>
+          window.localStorage.getItem('dangen_user') ||
+          window.sessionStorage.getItem('dangen_user') ||
+          'operator@dangen.io',
+        []
+    );
 
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setCounts((current) =>
-        current.map((value, index) => {
-          const target = baseMetrics[index].target;
-          if (value >= target) return target;
-          const step = Math.max(target / 18, 0.1);
-          return Math.min(target, Number((value + step).toFixed(1)));
-        })
-      );
-    }, 120);
-    return () => window.clearInterval(interval);
-  }, []);
+    useEffect(() => {
+        const timeInterval = window.setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => window.clearInterval(timeInterval);
+    }, []);
 
-  const handleLogout = useCallback(() => {
-    window.localStorage.removeItem('dangen_auth');
-    window.localStorage.removeItem('dangen_user');
-    window.sessionStorage.removeItem('dangen_auth');
-    window.sessionStorage.removeItem('dangen_user');
-    navigate('/login');
-  }, [navigate]);
+    useEffect(() => {
+        const interval = window.setInterval(() => {
+            const nodes = document.querySelectorAll('.map-node');
+            nodes.forEach(node => {
+                if(Math.random() > 0.7) {
+                    node.classList.add('primary-glow');
+                    setTimeout(() => node.classList.remove('primary-glow'), 500);
+                }
+            });
+        }, 2000);
+        return () => window.clearInterval(interval);
+    }, []);
 
-  return (
-    <div className="relative min-h-screen overflow-hidden bg-[#06090f] text-white px-4 py-8 sm:px-6 lg:px-10">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,0,60,0.12),transparent_20%),radial-gradient(circle_at_bottom_right,rgba(255,0,60,0.08),transparent_18%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.04),transparent_35%,rgba(255,255,255,0.04))] bg-[length:180px_180px] opacity-30" />
+    const handleLogout = useCallback(() => {
+        window.localStorage.removeItem('dangen_auth');
+        window.localStorage.removeItem('dangen_user');
+        window.sessionStorage.removeItem('dangen_auth');
+        window.sessionStorage.removeItem('dangen_user');
+        navigate('/login');
+    }, [navigate]);
 
-      <div className="relative mx-auto max-w-7xl space-y-6">
-        <div className="glass-panel rounded-[2rem] border border-white/10 bg-[#07090f]/90 p-5 shadow-[0_40px_120px_rgba(255,0,60,0.08)] backdrop-blur-xl transition duration-300 sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.35em] text-red-300/70">Dashboard</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">Operational console</h2>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="rounded-3xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-300">
-                <span className="font-medium text-white">{user}</span>
-                <div className="mt-1 text-xs uppercase tracking-[0.28em] text-red-300/70">Analyst profile</div>
-              </div>
-              <div className="rounded-3xl border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm uppercase tracking-[0.25em] text-red-200">
-                {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="glass-panel z-10 flex flex-col gap-6 rounded-[2rem] border border-red-500/15 bg-[#07080f]/90 p-6 shadow-[0_40px_120px_rgba(255,0,60,0.12)] backdrop-blur-xl transition duration-300 hover:-translate-y-0.5">
-            <div className="space-y-5">
-              <div className="rounded-[1.75rem] border border-white/10 bg-[#08060d]/80 p-5">
-                <p className="text-xs uppercase tracking-[0.35em] text-red-300/70">Session</p>
-                <div className="mt-4 text-lg font-semibold text-white">{user}</div>
-                <p className="mt-2 text-sm text-gray-400">Persistent access enabled</p>
-              </div>
-              <div className="space-y-3 rounded-[1.75rem] border border-white/10 bg-white/5 p-4">
-                {[
-                  { label: 'Access', value: 'Protected' },
-                  { label: 'Tier', value: 'Enterprise' },
-                  { label: 'Mode', value: 'Live Monitoring' },
-                ].map((item) => (
-                  <div key={item.label} className="rounded-3xl border border-white/10 bg-[#080610]/80 p-4 text-sm text-gray-300 transition hover:border-red-400/40 hover:bg-white/10">
-                    <div className="uppercase tracking-[0.32em] text-[10px] text-red-300/70">{item.label}</div>
-                    <div className="mt-2 text-base font-semibold text-white">{item.value}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="mt-auto rounded-3xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-red-100 transition hover:bg-red-500/20 hover:text-white"
-            >
-              Logout
-            </button>
-          </aside>
-
-          <main className="relative z-10 space-y-6">
-            <section className="glass-panel rounded-[2rem] border border-red-500/15 bg-[#070a14]/90 p-8 shadow-[0_30px_100px_rgba(255,0,60,0.08)] backdrop-blur-xl transition duration-300 hover:-translate-y-0.5">
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                <div className="max-w-2xl space-y-3">
-                  <p className="text-sm uppercase tracking-[0.35em] text-red-300/80">Command Center</p>
-                  <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">DANGEN Command Center</h1>
-                  <p className="text-base leading-7 text-gray-400 sm:text-lg">
-                    Enterprise threat posture and live incident telemetry in a single secure command surface.
-                  </p>
+    return (
+        <div className="stitch-dashboard bg-background text-on-surface font-body-md overflow-x-hidden relative min-h-screen dark">
+            <div className="stitch-scanline"></div>
+            
+            {/* Sidebar */}
+            <aside className="fixed left-0 top-0 h-full w-64 stitch-glass-panel border-r border-primary/15 flex flex-col py-panel-padding z-40">
+                <div className="px-6 mb-12">
+                    <h1 className="font-headline-lg text-headline-lg text-primary tracking-tighter leading-tight">DANGEN</h1>
+                    <p className="font-label-caps text-[10px] text-primary/60 tracking-[0.3em] mt-1 uppercase">Cyber Threat Defense</p>
                 </div>
-                <div className="flex flex-wrap gap-3">
-                  <span className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs uppercase tracking-[0.35em] text-red-200">
-                    Secure mode
-                  </span>
-                  <span className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.35em] text-gray-300">
-                    Persistent session live
-                  </span>
-                </div>
-              </div>
-            </section>
-
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {useMemo(() => baseMetrics.map((metric, index) => {
-                const progress = Math.min(100, Math.round((counts[index] / metric.target) * 100));
-                return <MetricCard key={metric.label} metric={metric} value={counts[index]} progress={progress} />;
-              }), [counts])}
-            </section>
-
-            <section className="grid gap-4 xl:grid-cols-[1.9fr_1fr]">
-              <div className="glass-panel relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#070a16]/90 p-6 sm:p-8 shadow-[0_40px_120px_rgba(0,0,0,0.18)] transition duration-200 hover:-translate-y-0.5">
-                <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#ff003c]/15 to-transparent" />
-                <div className="flex items-center justify-between gap-3 pb-4">
-                  <div>
-                    <p className="text-sm uppercase tracking-[0.35em] text-red-300/70">Threat map</p>
-                    <h2 className="mt-2 text-2xl font-semibold text-white">Global intrusion vector</h2>
-                  </div>
-                  <span className="rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-xs uppercase tracking-[0.3em] text-red-200">
-                    Live view
-                  </span>
-                </div>
-                <div className="rounded-[1.75rem] border border-white/10 bg-[#060811] p-6 shadow-[inset_0_0_0_1px_rgba(255,0,60,0.08)]">
-                  <div className="relative h-[320px] overflow-hidden rounded-[1.5rem] border border-white/5 bg-[#070712]">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_25%,rgba(255,0,60,0.16),transparent_18%),radial-gradient(circle_at_72%_22%,rgba(255,255,255,0.08),transparent_16%)]" />
-                    <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.04),transparent_30%,rgba(255,255,255,0.04))] bg-[length:220px_220px] opacity-30" />
-                    <div className="absolute left-10 top-14 h-3 w-3 rounded-full bg-red-500 shadow-[0_0_16px_rgba(255,0,60,0.55)]" />
-                    <div className="absolute left-24 top-28 h-2 w-2 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.28)]" />
-                    <div className="absolute right-20 top-24 h-3 w-3 rounded-full bg-red-300 shadow-[0_0_14px_rgba(255,0,60,0.3)]" />
-                    <div className="absolute right-16 bottom-20 h-2 w-2 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.18)]" />
-                    <div className="absolute left-1/2 top-20 h-0.5 w-36 rounded-full bg-white/10 blur-sm" />
-                    <div className="absolute left-24 bottom-16 h-0.5 w-44 rounded-full bg-white/10 blur-sm" />
-                    <div className="absolute right-8 bottom-8 h-0.5 w-20 rounded-full bg-red-500/30" />
-                    <div className="absolute inset-x-0 bottom-0 p-6">
-                      <div className="grid grid-cols-2 gap-3 text-[11px] uppercase tracking-[0.3em] text-red-200 text-opacity-80">
-                        <span>Singapore</span>
-                        <span>Frankfurt</span>
-                        <span>São Paulo</span>
-                        <span>Toronto</span>
-                      </div>
+                <nav className="flex-grow">
+                    <ul className="space-y-1">
+                        <li className="flex items-center gap-stack-md bg-primary-container/20 text-primary border-l-4 border-primary px-6 py-3 shadow-[inset_10px_0_15px_-10px_rgba(255,85,64,0.4)] cursor-pointer">
+                            <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>dashboard</span>
+                            <span className="font-label-caps text-label-caps">Command Center</span>
+                        </li>
+                        <li className="flex items-center gap-stack-md text-on-surface-variant px-6 py-3 hover:text-primary hover:bg-primary/5 transition-all cursor-pointer">
+                            <span className="material-symbols-outlined">hub</span>
+                            <span className="font-label-caps text-label-caps">Neural Map</span>
+                        </li>
+                        <li className="flex items-center gap-stack-md text-on-surface-variant px-6 py-3 hover:text-primary transition-all cursor-pointer">
+                            <span className="material-symbols-outlined">smart_toy</span>
+                            <span className="font-label-caps text-label-caps">Threat Intelligence</span>
+                        </li>
+                        <li className="flex items-center gap-stack-md text-on-surface-variant px-6 py-3 hover:text-primary transition-all cursor-pointer">
+                            <span className="material-symbols-outlined">security</span>
+                            <span className="font-label-caps text-label-caps">Threat Intel</span>
+                        </li>
+                        <li className="flex items-center gap-stack-md text-on-surface-variant px-6 py-3 hover:text-primary transition-all cursor-pointer">
+                            <span className="material-symbols-outlined">memory</span>
+                            <span className="font-label-caps text-label-caps">ML Engine</span>
+                        </li>
+                        <li className="flex items-center gap-stack-md text-on-surface-variant px-6 py-3 hover:text-primary transition-all cursor-pointer">
+                            <span className="material-symbols-outlined">description</span>
+                            <span className="font-label-caps text-label-caps">RAG Docs</span>
+                        </li>
+                        <li className="flex items-center gap-stack-md text-on-surface-variant px-6 py-3 hover:text-primary transition-all cursor-pointer">
+                            <span className="material-symbols-outlined">terminal</span>
+                            <span className="font-label-caps text-label-caps">Device Intel</span>
+                        </li>
+                        <li className="flex items-center gap-stack-md text-on-surface-variant px-6 py-3 hover:text-primary transition-all cursor-pointer">
+                            <span className="material-symbols-outlined">public</span>
+                            <span className="font-label-caps text-label-caps">GeoPulse</span>
+                        </li>
+                    </ul>
+                </nav>
+                <div className="mt-auto px-6 space-y-4">
+                    <div className="flex items-center gap-stack-md text-on-surface-variant hover:text-primary transition-all cursor-pointer">
+                        <span className="material-symbols-outlined">settings</span>
+                        <span className="font-label-caps text-label-caps">Settings</span>
                     </div>
-                  </div>
-                </div>
-                <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                  {regions.map((region) => (
-                    <RegionCard key={region.name} region={region} />
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <ThreatIndicator />
-                <div className="glass-panel rounded-[2rem] border border-white/10 bg-[#07090f]/90 p-5 sm:p-6 shadow-[0_40px_120px_rgba(0,0,0,0.18)] transition duration-200 hover:-translate-y-0.5">
-                  <div className="flex items-center justify-between gap-3 pb-4">
-                    <div>
-                      <p className="text-sm uppercase tracking-[0.35em] text-red-300/70">Threat severity</p>
-                      <h2 className="mt-2 text-2xl font-semibold text-white">Severity distribution</h2>
+                    <div className="flex items-center gap-stack-md text-on-surface-variant hover:text-primary transition-all cursor-pointer" onClick={handleLogout}>
+                        <span className="material-symbols-outlined">logout</span>
+                        <span className="font-label-caps text-label-caps">Logout</span>
                     </div>
-                    <span className="text-xs uppercase tracking-[0.3em] text-gray-400">24h</span>
-                  </div>
-                  <div className="mt-6 grid gap-4">
-                    {[
-                      { label: 'Critical', value: '42%', color: 'from-red-500 to-[#ff4f6d]', width: 'w-[42%]' },
-                      { label: 'High', value: '28%', color: 'from-red-400 to-[#ff7a95]', width: 'w-[28%]' },
-                      { label: 'Elevated', value: '18%', color: 'from-white/25 to-white/10', width: 'w-[18%]' },
-                      { label: 'Low', value: '12%', color: 'from-white/15 to-white/5', width: 'w-[12%]' },
-                    ].map((item) => (
-                      <div key={item.label} className="space-y-2">
-                        <div className="flex items-center justify-between text-sm text-gray-300">
-                          <span>{item.label}</span>
-                          <span>{item.value}</span>
+                    <div className="pt-6 border-t border-primary/10 flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full border border-primary/30 p-0.5">
+                            <img alt="Threat Analyst Avatar" className="w-full h-full rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBICxuDH2Zss_1TrKLKS5p9py1BxEJzlgcDnpMcCNIxSEdUJw1mv9nZH3h4dyPrY5MgQqtRQoEQX7vEQIofh_MN4_lmYGZXm-KHAdbcpHCrKwWziT0iY8xqdA-o1brpErQA6GkjSU1VjIB1Bz3ALMbED1wLOqlH4JnNfL88-wJyqTCPfdSYZtfS_1LOadrqnKtr6xo3W0m4iJEmj6GbipXkD5WvbnuvI8g13EjReUlm0aPM3ezZNjoOiLi4IR4UIJuXljc08G4f--VQ" />
                         </div>
-                        <div className="h-3 overflow-hidden rounded-full bg-white/10">
-                          <div className={`h-full rounded-full bg-gradient-to-r ${item.color} shadow-[0_0_12px_rgba(255,0,60,0.22)] ${item.width}`} />
+                        <div>
+                            <p className="font-label-caps text-[10px] text-white w-24 overflow-hidden text-ellipsis whitespace-nowrap" title={user}>{user}</p>
+                            <p className="text-[9px] text-primary/50">Level 7</p>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                    </div>
                 </div>
-              </div>
-            </section>
+            </aside>
 
-            <section className="grid gap-4 xl:grid-cols-[2fr_1fr]">
-              <div className="glass-panel rounded-[2rem] border border-white/10 bg-[#07090f]/90 p-6 sm:p-7 shadow-[0_40px_120px_rgba(0,0,0,0.18)] transition duration-200 hover:-translate-y-0.5">
-                <div className="flex items-center justify-between gap-4 pb-4">
-                  <div>
-                    <p className="text-sm uppercase tracking-[0.35em] text-red-300/70">Live threat feed</p>
-                    <h2 className="mt-2 text-2xl font-semibold text-white">Active event stream</h2>
-                  </div>
-                  <span className="rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-xs uppercase tracking-[0.3em] text-red-200">
-                    4 new
-                  </span>
-                </div>
-                <div className="space-y-4">
-                  {feedItems.map((item) => (
-                    <FeedItemCard key={item.time} item={item} />
-                  ))}
-                </div>
-              </div>
+            {/* Main Content */}
+            <main className="ml-64 p-margin-page max-w-[1600px]">
+                {/* Top Bar */}
+                <header className="flex justify-between items-center mb-8">
+                    <div className="relative w-96">
+                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/50">search</span>
+                        <input className="w-full bg-surface-container-lowest/50 border border-primary/20 rounded-lg py-2 pl-10 pr-4 text-body-md focus:ring-1 focus:ring-primary focus:border-primary placeholder-on-surface-variant/30 transition-all outline-none" placeholder="Search threats, IPs, domains, insights..." type="text" />
+                    </div>
+                    <div className="flex items-center gap-stack-lg">
+                        <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                            <span className="font-label-caps text-label-caps text-primary tracking-widest">LIVE</span>
+                            <span className="font-data-point text-sm text-on-surface-variant ml-2">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="relative">
+                                <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">notifications</span>
+                                <span className="absolute -top-1 -right-1 bg-primary text-black text-[9px] font-bold px-1 rounded-full">7</span>
+                            </div>
+                            <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">account_circle</span>
+                        </div>
+                    </div>
+                </header>
 
-              <div className="glass-panel rounded-[2rem] border border-white/10 bg-[#07090f]/90 p-6 sm:p-7 shadow-[0_40px_120px_rgba(0,0,0,0.18)] transition duration-200 hover:-translate-y-0.5">
-                <div className="flex items-center justify-between gap-4 pb-4">
-                  <div>
-                    <p className="text-sm uppercase tracking-[0.35em] text-red-300/70">Recent alerts</p>
-                    <h2 className="mt-2 text-2xl font-semibold text-white">Priority notifications</h2>
-                  </div>
-                  <span className="text-xs uppercase tracking-[0.3em] text-gray-400">Latest</span>
+                {/* Metric Grid */}
+                <div className="grid grid-cols-5 gap-gutter mb-gutter">
+                    <div className="stitch-glass-panel p-panel-padding relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity">
+                            <span className="material-symbols-outlined text-primary scale-150">trending_up</span>
+                        </div>
+                        <p className="font-label-caps text-[10px] text-on-surface-variant mb-2 uppercase tracking-tighter">Total Threats</p>
+                        <div className="flex items-end justify-between">
+                            <div>
+                                <h3 className="font-headline-lg text-3xl text-white">2,451</h3>
+                                <p className="text-tertiary text-[10px] flex items-center mt-1">
+                                    <span className="material-symbols-outlined text-xs mr-1">arrow_upward</span> 12.4%
+                                </p>
+                            </div>
+                            <div className="w-12 h-12 flex items-center justify-center border border-primary/20 rounded-full primary-glow">
+                                <span className="material-symbols-outlined text-primary" style={{fontVariationSettings: "'FILL' 1"}}>vital_signs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="stitch-glass-panel p-panel-padding relative overflow-hidden group">
+                        <p className="font-label-caps text-[10px] text-on-surface-variant mb-2 uppercase tracking-tighter">Active Attacks</p>
+                        <div className="flex items-end justify-between">
+                            <div>
+                                <h3 className="font-headline-lg text-3xl text-white">123</h3>
+                                <p className="text-tertiary text-[10px] flex items-center mt-1">
+                                    <span className="material-symbols-outlined text-xs mr-1">arrow_upward</span> 5.7%
+                                </p>
+                            </div>
+                            <div className="w-12 h-12 flex items-center justify-center border border-primary/20 rounded-full">
+                                <span className="material-symbols-outlined text-primary animate-pulse">track_changes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="stitch-glass-panel p-panel-padding relative overflow-hidden group">
+                        <p className="font-label-caps text-[10px] text-on-surface-variant mb-2 uppercase tracking-tighter">Compromised IPs</p>
+                        <div className="flex items-end justify-between">
+                            <div>
+                                <h3 className="font-headline-lg text-3xl text-white">89</h3>
+                                <p className="text-tertiary text-[10px] flex items-center mt-1">
+                                    <span className="material-symbols-outlined text-xs mr-1">arrow_upward</span> 3.2%
+                                </p>
+                            </div>
+                            <div className="w-12 h-12 flex items-center justify-center border border-primary/20 rounded-full">
+                                <span className="material-symbols-outlined text-primary">wifi_off</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="stitch-glass-panel p-panel-padding relative overflow-hidden group">
+                        <p className="font-label-caps text-[10px] text-on-surface-variant mb-2 uppercase tracking-tighter">Data Breaches</p>
+                        <div className="flex items-end justify-between">
+                            <div>
+                                <h3 className="font-headline-lg text-3xl text-white">23</h3>
+                                <p className="text-tertiary text-[10px] flex items-center mt-1">
+                                    <span className="material-symbols-outlined text-xs mr-1">arrow_upward</span> 11.9%
+                                </p>
+                            </div>
+                            <div className="w-12 h-12 flex items-center justify-center border border-primary/20 rounded-full">
+                                <span className="material-symbols-outlined text-primary">lock_open</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="stitch-glass-panel p-panel-padding relative overflow-hidden group">
+                        <p className="font-label-caps text-[10px] text-on-surface-variant mb-2 uppercase tracking-tighter">System Health</p>
+                        <div className="flex items-end justify-between">
+                            <div>
+                                <h3 className="font-headline-lg text-3xl text-white">98.6%</h3>
+                                <p className="text-tertiary text-[10px] flex items-center mt-1">
+                                    <span className="material-symbols-outlined text-xs mr-1">arrow_upward</span> 0.8%
+                                </p>
+                            </div>
+                            <div className="w-12 h-12 flex items-center justify-center border border-tertiary/20 rounded-full bg-tertiary/5 shadow-[0_0_15px_rgba(0,230,57,0.15)]">
+                                <span className="material-symbols-outlined text-tertiary">verified_user</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="space-y-3">
-                  {alerts.map((alert) => (
-                    <AlertCard key={alert.id} alert={alert} />
-                  ))}
+
+                {/* Middle Section: Map and Feed */}
+                <div className="grid grid-cols-12 gap-gutter mb-gutter h-[450px]">
+                    <div className="col-span-8 stitch-glass-panel p-panel-padding relative overflow-hidden">
+                        <div className="flex justify-between items-center mb-4 relative z-10">
+                            <h2 className="font-headline-lg text-xl tracking-tight text-white uppercase">Global Threat Map</h2>
+                            <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                                <span className="text-[10px] font-bold text-primary tracking-widest">LIVE FEED</span>
+                            </div>
+                        </div>
+                        <div className="absolute inset-0 opacity-40 mix-blend-screen pointer-events-none">
+                            <img className="w-full h-full object-cover grayscale invert" alt="A stylized global world map in high-contrast dark tones, featuring glowing red neon connection lines and pulsating data nodes indicating cyber attack routes. The aesthetic is ultra-modern HUD style with surgical precision, technical grid lines, and atmospheric depth, illuminated by soft red glows against a deep black background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-vl4Xw70Su7H5FWweP3BZj0VVTpXn8JYW5VlVV_jovDPcCkwoJlzl9JGl1EkE62g47mHd82lsqgBy3BZR9AIb3HZ9VkoKBd6-a4I7Cw_DKLpTgUl8-AirWvgc7xoLxhdlicxC8kVwUN2JR7zuBgDMyHQJQKUrGwo22brgCYZQlmKd2lAWKA0mUSbeYHpO1Bi1caJCVZQVsqGLynnIjWHAOEBGizfC50ZIx1wq_5TbJ76IjSpZLS1ll9lqe3hwOe_xxJTp7qbQ5HRg" />
+                            <div className="map-node top-[40%] left-[25%]"></div>
+                            <div className="map-node top-[30%] left-[70%]"></div>
+                            <div className="map-node top-[60%] left-[45%]"></div>
+                            <div className="map-node top-[55%] left-[80%]"></div>
+                        </div>
+                        <div className="absolute bottom-6 left-6 stitch-glass-panel p-4 border-l-4 border-primary z-10">
+                            <p className="text-[10px] text-on-surface-variant font-bold mb-3">TOP ATTACK SOURCES</p>
+                            <ul className="space-y-2 text-[11px] w-48">
+                                <li className="flex justify-between items-center"><span className="flex items-center gap-2"><span className="material-symbols-outlined text-[12px] text-primary">flag</span> Russia</span> <span className="font-bold">2,320</span></li>
+                                <li className="flex justify-between items-center"><span className="flex items-center gap-2"><span className="material-symbols-outlined text-[12px] text-primary">flag</span> United States</span> <span className="font-bold">1,876</span></li>
+                                <li className="flex justify-between items-center"><span className="flex items-center gap-2"><span className="material-symbols-outlined text-[12px] text-primary">flag</span> China</span> <span className="font-bold">1,234</span></li>
+                            </ul>
+                            <button className="mt-4 text-[10px] text-primary hover:underline font-bold uppercase tracking-widest w-full text-center">View All</button>
+                        </div>
+                        <div className="absolute bottom-6 right-6 flex items-center gap-3 z-10">
+                            <span className="text-[9px] text-on-surface-variant">Low</span>
+                            <div className="flex gap-1">
+                                <div className="w-1.5 h-1.5 bg-tertiary rounded-full"></div>
+                                <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
+                                <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                                <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></div>
+                            </div>
+                            <span className="text-[9px] text-primary font-bold">Critical</span>
+                        </div>
+                    </div>
+
+                    <div className="col-span-4 flex flex-col gap-4">
+                        <div className="stitch-glass-panel p-panel-padding flex-grow flex flex-col h-full overflow-hidden">
+                            <h2 className="font-headline-lg text-lg text-white mb-4 uppercase tracking-tight">Live Threat Feed</h2>
+                            <div className="flex-grow overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                                <div className="flex items-center justify-between border-b border-primary/5 pb-2">
+                                    <div className="flex items-center gap-3">
+                                        <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+                                        <div>
+                                            <p className="text-[11px] font-bold text-white uppercase">Brute Force Attack</p>
+                                            <p className="text-[10px] text-on-surface-variant">10.0.0.45</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] text-on-surface-variant">2s ago</span>
+                                </div>
+                                <div className="flex items-center justify-between border-b border-primary/5 pb-2">
+                                    <div className="flex items-center gap-3">
+                                        <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                                        <div>
+                                            <p className="text-[11px] font-bold text-white uppercase">Malware Detected</p>
+                                            <p className="text-[10px] text-on-surface-variant">185.220.101.4</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] text-on-surface-variant">5s ago</span>
+                                </div>
+                                <div className="flex items-center justify-between border-b border-primary/5 pb-2">
+                                    <div className="flex items-center gap-3">
+                                        <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                                        <div>
+                                            <p className="text-[11px] font-bold text-white uppercase">DDoS Attack</p>
+                                            <p className="text-[10px] text-on-surface-variant">103.21.244.0</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] text-on-surface-variant">8s ago</span>
+                                </div>
+                                <div className="flex items-center justify-between border-b border-primary/5 pb-2">
+                                    <div className="flex items-center gap-3">
+                                        <span className="w-1.5 h-1.5 bg-tertiary rounded-full"></span>
+                                        <div>
+                                            <p className="text-[11px] font-bold text-white uppercase">Suspicious Login</p>
+                                            <p className="text-[10px] text-on-surface-variant">172.16.254.1</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] text-on-surface-variant">12s ago</span>
+                                </div>
+                                <div className="flex items-center justify-between border-b border-primary/5 pb-2">
+                                    <div className="flex items-center gap-3">
+                                        <span className="w-1.5 h-1.5 bg-tertiary rounded-full"></span>
+                                        <div>
+                                            <p className="text-[11px] font-bold text-white uppercase">Data Exfiltration</p>
+                                            <p className="text-[10px] text-on-surface-variant">192.168.1.88</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] text-on-surface-variant">15s ago</span>
+                                </div>
+                            </div>
+                            <button className="mt-4 w-full py-2 bg-surface-container/50 border border-primary/10 text-[10px] text-white hover:bg-primary/10 transition-all uppercase tracking-widest font-bold cursor-pointer">View All Activity</button>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </section>
-          </main>
+
+                {/* Bottom Grid */}
+                <div className="grid grid-cols-12 gap-gutter mb-gutter">
+                    <div className="col-span-4 stitch-glass-panel p-panel-padding h-64 flex flex-col">
+                        <h2 className="font-headline-lg text-sm text-white mb-6 uppercase tracking-tight">Threat Severity</h2>
+                        <div className="flex-grow flex items-center justify-center gap-8">
+                            <div className="relative w-32 h-32">
+                                <svg className="w-full h-full transform -rotate-90">
+                                    <circle cx="64" cy="64" fill="none" r="50" stroke="rgba(255, 85, 64, 0.1)" strokeWidth="8"></circle>
+                                    <circle className="drop-shadow-[0_0_8px_#ff5540]" cx="64" cy="64" fill="none" r="50" stroke="#ff5540" strokeDasharray="314" strokeDashoffset="150" strokeWidth="12"></circle>
+                                </svg>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span className="text-xl font-bold text-white">2,451</span>
+                                    <span className="text-[8px] text-on-surface-variant uppercase">Total</span>
+                                </div>
+                            </div>
+                            <ul className="space-y-2">
+                                <li className="flex items-center gap-2 text-[10px]"><span className="w-2 h-2 bg-primary rounded-full"></span> <span className="text-on-surface-variant w-12">Critical</span> <span className="font-bold text-white">23%</span></li>
+                                <li className="flex items-center gap-2 text-[10px]"><span className="w-2 h-2 bg-orange-500 rounded-full"></span> <span className="text-on-surface-variant w-12">High</span> <span className="font-bold text-white">32%</span></li>
+                                <li className="flex items-center gap-2 text-[10px]"><span className="w-2 h-2 bg-yellow-500 rounded-full"></span> <span className="text-on-surface-variant w-12">Medium</span> <span className="font-bold text-white">28%</span></li>
+                                <li className="flex items-center gap-2 text-[10px]"><span className="w-2 h-2 bg-tertiary rounded-full"></span> <span className="text-on-surface-variant w-12">Low</span> <span className="font-bold text-white">17%</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="col-span-4 stitch-glass-panel p-panel-padding h-64 flex flex-col">
+                        <h2 className="font-headline-lg text-sm text-white mb-6 uppercase tracking-tight">Attack Types</h2>
+                        <div className="flex-grow space-y-4">
+                            <div className="space-y-1">
+                                <div className="flex justify-between text-[10px] text-on-surface-variant"><span>Malware</span> <span>37%</span></div>
+                                <div className="h-2 w-full bg-primary/10 rounded-full overflow-hidden"><div className="h-full bg-primary" style={{ width: '37%' }}></div></div>
+                            </div>
+                            <div className="space-y-1">
+                                <div className="flex justify-between text-[10px] text-on-surface-variant"><span>Phishing</span> <span>24%</span></div>
+                                <div className="h-2 w-full bg-primary/10 rounded-full overflow-hidden"><div className="h-full bg-primary/70" style={{ width: '24%' }}></div></div>
+                            </div>
+                            <div className="space-y-1">
+                                <div className="flex justify-between text-[10px] text-on-surface-variant"><span>DDoS</span> <span>19%</span></div>
+                                <div className="h-2 w-full bg-primary/10 rounded-full overflow-hidden"><div className="h-full bg-primary/50" style={{ width: '19%' }}></div></div>
+                            </div>
+                            <div className="space-y-1">
+                                <div className="flex justify-between text-[10px] text-on-surface-variant"><span>Brute Force</span> <span>12%</span></div>
+                                <div className="h-2 w-full bg-primary/10 rounded-full overflow-hidden"><div className="h-full bg-primary/30" style={{ width: '12%' }}></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-span-4 stitch-glass-panel p-panel-padding h-64 flex flex-col items-center justify-center relative">
+                        <div className="absolute top-4 left-4 font-headline-lg text-sm text-white uppercase">System Status</div>
+                        <div className="absolute top-4 right-4">
+                            <span className="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer text-sm">close</span>
+                        </div>
+                        <div className="relative w-40 h-40">
+                            <svg className="w-full h-full transform -rotate-90">
+                                <circle cx="80" cy="80" fill="none" r="65" stroke="rgba(0, 230, 57, 0.05)" strokeWidth="1"></circle>
+                                <circle cx="80" cy="80" fill="none" r="55" stroke="rgba(0, 230, 57, 0.2)" strokeDasharray="345" strokeDashoffset="0" strokeWidth="4"></circle>
+                                <circle className="drop-shadow-[0_0_12px_#00e639]" cx="80" cy="80" fill="none" r="55" stroke="#00e639" strokeDasharray="345" strokeDashoffset="40" strokeWidth="6"></circle>
+                            </svg>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                <h4 className="text-3xl font-bold text-white leading-none">98.6%</h4>
+                                <p className="text-[9px] text-tertiary font-bold tracking-[0.2em] uppercase mt-2">Secure</p>
+                            </div>
+                        </div>
+                        <div className="mt-4 flex gap-6">
+                            <div className="flex items-center gap-1.5 text-[10px] text-on-surface-variant"><span className="material-symbols-outlined text-[14px] text-tertiary">check_circle</span> Network</div>
+                            <div className="flex items-center gap-1.5 text-[10px] text-on-surface-variant"><span className="material-symbols-outlined text-[14px] text-tertiary">check_circle</span> Database</div>
+                            <div className="flex items-center gap-1.5 text-[10px] text-on-surface-variant"><span className="material-symbols-outlined text-[14px] text-tertiary">check_circle</span> API Gateway</div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            {/* Footer */}
+            <footer className="ml-64 w-[calc(100%-16rem)] px-margin-page py-base flex justify-between items-center opacity-50 border-t border-primary/10">
+                <p className="font-body-md text-body-md text-on-surface-variant">© 2026 DANGEN Cyber Threat Defense System</p>
+                <div className="flex gap-stack-lg">
+                    <span className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Privacy Policy</span>
+                    <span className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Terms of Service</span>
+                    <span className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Security Disclosure</span>
+                </div>
+            </footer>
+
+            {/* Neural Intelligence Assistant */}
+            <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end gap-4">
+                {/* Chat Popup */}
+                <div className={`w-80 stitch-glass-panel border-primary/30 p-panel-padding shadow-[0_0_40px_rgba(255,85,64,0.1)] rounded-xl transition-all duration-500 ${isChatOpen ? 'translate-y-0 opacity-100 pointer-events-auto' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center p-2 primary-glow">
+                                <span className="material-symbols-outlined text-primary" style={{fontVariationSettings: "'FILL' 1"}}>smart_toy</span>
+                            </div>
+                            <div>
+                                <h5 className="text-[12px] font-bold text-white uppercase leading-tight">Neural Intelligence</h5>
+                                <p className="text-[10px] text-tertiary flex items-center gap-1"><span className="w-1.5 h-1.5 bg-tertiary rounded-full"></span> Online</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <span className="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer text-sm">remove</span>
+                            <span className="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer text-sm" onClick={() => setIsChatOpen(false)}>close</span>
+                        </div>
+                    </div>
+                    <div className="space-y-4 mb-6 h-48 overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="flex gap-3">
+                            <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-[14px] text-primary">smart_toy</span>
+                            </div>
+                            <div className="bg-surface-variant/40 p-3 rounded-lg text-[11px] text-on-surface leading-relaxed">
+                                Hi! I'm your Neural Intelligence console. How can I help you today?
+                            </div>
+                        </div>
+                    </div>
+                    <div className="space-y-2 mb-6">
+                        <button className="w-full text-left p-2 rounded border border-primary/20 text-[10px] text-primary hover:bg-primary/10 transition-all cursor-pointer">Explain this alert</button>
+                        <button className="w-full text-left p-2 rounded border border-primary/20 text-[10px] text-primary hover:bg-primary/10 transition-all cursor-pointer">How to mitigate DDoS attacks?</button>
+                        <button className="w-full text-left p-2 rounded border border-primary/20 text-[10px] text-primary hover:bg-primary/10 transition-all cursor-pointer">Check IP reputation</button>
+                    </div>
+                    <div className="relative">
+                        <input className="w-full bg-black/40 border border-primary/20 rounded-lg py-2 pl-4 pr-10 text-[11px] outline-none focus:border-primary transition-all" placeholder="Ask me anything..." type="text" />
+                        <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-primary cursor-pointer">send</span>
+                    </div>
+                    <div className="mt-4 text-center">
+                        <p className="text-[8px] text-on-surface-variant uppercase tracking-widest">RAG Powered • Trained on DANGEN Docs</p>
+                    </div>
+                </div>
+
+                {/* Bouncing FAB */}
+                <div className="relative group cursor-pointer" onClick={() => setIsChatOpen(!isChatOpen)}>
+                    <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center bouncing-ai primary-glow relative z-10">
+                        <span className="material-symbols-outlined text-black scale-125" style={{fontVariationSettings: "'FILL' 1"}}>smart_toy</span>
+                    </div>
+                    {/* Ripple Effects */}
+                    <div className="absolute inset-0 rounded-full border border-primary/40 animate-ping opacity-20"></div>
+                    <div className="absolute inset-0 rounded-full border border-primary/20 animate-pulse-slow scale-125"></div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Dashboard;

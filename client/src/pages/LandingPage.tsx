@@ -213,8 +213,8 @@ const LandingPage: React.FC = () => {
         body: JSON.stringify({ email: signupEmail })
       });
       setEmailCooldown(60);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      console.error("Error occurred");
     }
   };
 
@@ -226,8 +226,8 @@ const LandingPage: React.FC = () => {
         body: JSON.stringify({ phone: signupMobile })
       });
       setMobileCooldown(60);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      console.error("Error occurred");
     }
   };
 
@@ -265,7 +265,7 @@ const LandingPage: React.FC = () => {
         const data = await res.json();
         setVerificationError(data.detail || 'Invalid email OTP. Please try again.');
       }
-    } catch (err) {
+    } catch {
       setVerificationError('Verification service unavailable.');
     } finally {
       setVerifying(false);
@@ -296,7 +296,7 @@ const LandingPage: React.FC = () => {
         const data = await res.json();
         setVerificationError(data.detail || 'Invalid mobile OTP. Please try again.');
       }
-    } catch (err) {
+    } catch {
       setVerificationError('Verification service unavailable.');
     } finally {
       setVerifying(false);

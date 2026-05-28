@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap');
+@import "./styles/stitch-dashboard.css";
 @import "tailwindcss";
 
 @theme {
@@ -20,9 +22,13 @@
   body {
     background-color: var(--color-dangen-dark);
     color: white;
-    font-family: var(--font-family-sans);
+    font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-orbitron {
+    font-family: 'Orbitron', sans-serif;
   }
 }
 
@@ -258,6 +264,74 @@
   @keyframes typing-bounce {
     0%, 100% { transform: translateY(0); opacity: 0.7; }
     50% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  .font-orbitron {
+    font-family: 'Orbitron', sans-serif;
+  }
+
+  .button-glow {
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+  }
+
+  .button-glow:hover {
+    box-shadow: 0 0 35px rgba(255, 43, 69, 0.35), inset 0 0 28px rgba(255, 43, 69, 0.09);
+    transform: translateY(-1px);
+  }
+
+  .hero-word {
+    position: relative;
+    display: inline-block;
+  }
+
+  .hero-word-clone {
+    position: absolute;
+    inset: 0;
+    display: block;
+    color: transparent;
+    text-shadow: 0 0 28px rgba(255, 43, 69, 0.55);
+    transform: translate(0, 0);
+  }
+
+  .hero-word-clone-red {
+    color: rgba(255, 77, 109, 0.25);
+    transform: translate(-2px, -2px);
+  }
+
+  .hero-word-clone-white {
+    color: rgba(255, 255, 255, 0.15);
+    transform: translate(2px, 2px);
+  }
+
+  .hero-word-highlight {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 56%;
+    height: 26%;
+    background: radial-gradient(circle at center, rgba(255, 43, 69, 0.14), transparent 55%);
+    transform: translate(-50%, -50%);
+    filter: blur(24px);
+    pointer-events: none;
+  }
+
+  .animate-radar-sweep {
+    animation: radar-sweep 20s linear infinite;
+  }
+
+  @keyframes radar-sweep {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.85; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(-1px); }
+  }
+
+  @keyframes fade-in-up {
+    0% { opacity: 0; transform: translateY(18px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes scanline {

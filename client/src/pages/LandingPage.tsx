@@ -95,6 +95,8 @@ const OtpInputGroup = ({ length = 6, value, onChange, disabled = false }: { leng
   );
 };
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [, setProgress] = useState(0);
@@ -207,20 +209,25 @@ const LandingPage: React.FC = () => {
 
   const sendEmailOTP = async () => {
     try {
-      await fetch('http://localhost:8000/api/auth/send-email', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/send-email-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: signupEmail })
       });
-      setEmailCooldown(60);
+      if (res.ok) {
+        setEmailCooldown(60);
+      } else {
+        const data = await res.json();
+        setVerificationError(data.detail || 'Failed to send OTP.');
+      }
     } catch {
-      console.error("Error occurred");
+      setVerificationError('Error occurred while sending OTP.');
     }
   };
 
   const sendMobileOTP = async () => {
     try {
-      await fetch('http://localhost:8000/api/auth/send-sms', {
+      await fetch(`${API_BASE_URL}/api/auth/send-sms`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: signupMobile })
@@ -252,10 +259,10 @@ const LandingPage: React.FC = () => {
     if (code.length !== 6) return;
     setVerifying(true);
     try {
-      const res = await fetch('http://localhost:8000/api/auth/verify', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/verify-email-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ target: signupEmail, code })
+        body: JSON.stringify({ email: signupEmail, otp: code })
       });
       if (res.ok) {
         setVerificationError('');
@@ -277,7 +284,7 @@ const LandingPage: React.FC = () => {
     if (code.length !== 6) return;
     setVerifying(true);
     try {
-      const res = await fetch('http://localhost:8000/api/auth/verify', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ target: signupMobile, code })

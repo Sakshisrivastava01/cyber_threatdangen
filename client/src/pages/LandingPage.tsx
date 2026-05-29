@@ -207,14 +207,19 @@ const LandingPage: React.FC = () => {
 
   const sendEmailOTP = async () => {
     try {
-      await fetch('http://localhost:8000/api/auth/send-email', {
+      const res = await fetch('http://localhost:8000/api/auth/send-email-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: signupEmail })
       });
-      setEmailCooldown(60);
+      if (res.ok) {
+        setEmailCooldown(60);
+      } else {
+        const data = await res.json();
+        setVerificationError(data.detail || 'Failed to send OTP.');
+      }
     } catch {
-      console.error("Error occurred");
+      setVerificationError('Error occurred while sending OTP.');
     }
   };
 
@@ -252,10 +257,10 @@ const LandingPage: React.FC = () => {
     if (code.length !== 6) return;
     setVerifying(true);
     try {
-      const res = await fetch('http://localhost:8000/api/auth/verify', {
+      const res = await fetch('http://localhost:8000/api/auth/verify-email-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ target: signupEmail, code })
+        body: JSON.stringify({ email: signupEmail, otp: code })
       });
       if (res.ok) {
         setVerificationError('');

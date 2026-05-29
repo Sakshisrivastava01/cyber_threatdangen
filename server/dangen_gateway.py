@@ -28,7 +28,11 @@ app = FastAPI(title="Dangen AI Cyber Defense Gateway")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "https://cyberthreatdangen.vercel.app",  # Example vercel domain, should be updated by user
+        "https://dangen.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

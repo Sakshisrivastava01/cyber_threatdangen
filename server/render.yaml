@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: dangen-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: RESEND_API_KEY
+        sync: false
+      - key: OTP_EXPIRY_MINUTES
+        value: "5"

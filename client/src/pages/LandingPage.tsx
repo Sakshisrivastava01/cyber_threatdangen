@@ -95,6 +95,8 @@ const OtpInputGroup = ({ length = 6, value, onChange, disabled = false }: { leng
   );
 };
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [, setProgress] = useState(0);
@@ -207,7 +209,7 @@ const LandingPage: React.FC = () => {
 
   const sendEmailOTP = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/auth/send-email-otp', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/send-email-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: signupEmail })
@@ -225,7 +227,7 @@ const LandingPage: React.FC = () => {
 
   const sendMobileOTP = async () => {
     try {
-      await fetch('http://localhost:8000/api/auth/send-sms', {
+      await fetch(`${API_BASE_URL}/api/auth/send-sms`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: signupMobile })
@@ -257,7 +259,7 @@ const LandingPage: React.FC = () => {
     if (code.length !== 6) return;
     setVerifying(true);
     try {
-      const res = await fetch('http://localhost:8000/api/auth/verify-email-otp', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/verify-email-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: signupEmail, otp: code })
@@ -282,7 +284,7 @@ const LandingPage: React.FC = () => {
     if (code.length !== 6) return;
     setVerifying(true);
     try {
-      const res = await fetch('http://localhost:8000/api/auth/verify', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ target: signupMobile, code })

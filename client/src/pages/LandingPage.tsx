@@ -496,6 +496,20 @@ const LandingPage: React.FC = () => {
               Explore Platform
             </button>
           </div>
+          
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              title="Skip Login"
+              onClick={() => {
+                window.sessionStorage.setItem('dangen_explore', 'true');
+                navigate('/dashboard');
+              }}
+              className="inline-flex items-center justify-center rounded-full border border-red-500/50 bg-[#050505]/50 px-8 py-3 text-sm font-semibold uppercase tracking-[0.22em] text-red-400 shadow-[0_0_15px_rgba(255,0,60,0.15)] transition duration-200 hover:bg-red-500/10 hover:shadow-[0_0_25px_rgba(255,0,60,0.3)] backdrop-blur-md"
+            >
+              Explore Dashboard
+            </button>
+          </div>
         </motion.div>
       </main>
 
@@ -611,6 +625,24 @@ const LandingPage: React.FC = () => {
                     >
                       {loginLoading ? 'Logging in…' : 'Login'}
                     </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.sessionStorage.setItem('dangen_explore', 'true');
+                        closeModal();
+                        navigate('/dashboard');
+                      }}
+                      className="group flex w-full flex-col items-center justify-center rounded-3xl border border-red-500/50 bg-[#070708]/50 px-5 py-3 shadow-[0_0_15px_rgba(255,0,60,0.15)] backdrop-blur-md transition duration-200 hover:bg-red-500/10 hover:shadow-[0_0_25px_rgba(255,0,60,0.3)]"
+                    >
+                      <span className="text-sm font-semibold uppercase tracking-[0.18em] text-red-300 transition-colors group-hover:text-red-200">
+                        Skip Login
+                      </span>
+                      <span className="mt-1 text-xs text-gray-400 transition-colors group-hover:text-gray-300">
+                        Explore Dashboard in Demo Mode
+                      </span>
+                    </button>
+
                     <div className="border-t border-white/10 pt-4 text-sm text-gray-300">
                       New to DANGEN?{' '}
                       <button type="button" onClick={openSignupModal} className="font-semibold text-white transition hover:text-red-300">

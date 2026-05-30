@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap');
 @import "./styles/stitch-dashboard.css";
 @import "tailwindcss";
+@config "../tailwind.config.js";
 
 @theme {
   --color-dangen-dark: #0b000f;
@@ -13,9 +14,93 @@
   --color-dangen-purple: #7a0019;
   --color-dangen-green: #ff4d6d;
 
+  --color-on-secondary: #690000;
+  --color-secondary-fixed: #ffdad4;
+  --color-surface-tint: #ffb4a8;
+  --color-inverse-on-surface: #313030;
+  --color-surface-bright: #3a3939;
+  --color-error-container: #93000a;
+  --color-inverse-surface: #e5e2e1;
+  --color-on-surface-variant: #ebbbb4;
+  --color-primary-fixed-dim: #ffb4a8;
+  --color-primary-container: #ff5540;
+  --color-on-secondary-fixed: #410000;
+  --color-on-tertiary-fixed-variant: #00530e;
+  --color-tertiary-container: #00a827;
+  --color-on-tertiary-container: #003205;
+  --color-outline: #b18780;
+  --color-surface-container-low: #1c1b1b;
+  --color-on-background: #e5e2e1;
+  --color-on-tertiary-fixed: #002203;
+  --color-secondary: #ffb4a8;
+  --color-error: #ffb4ab;
+  --color-secondary-container: #920703;
+  --color-surface-container: #201f1f;
+  --color-on-primary-container: #5c0000;
+  --color-surface: #131313;
+  --color-on-tertiary: #003907;
+  --color-on-error: #690005;
+  --color-on-secondary-fixed-variant: #920703;
+  --color-on-primary-fixed-variant: #930100;
+  --color-on-surface: #e5e2e1;
+  --color-tertiary: #00e639;
+  --color-on-primary: #690100;
+  --color-background: #131313;
+  --color-surface-variant: #353534;
+  --color-inverse-primary: #c00100;
+  --color-on-error-container: #ffdad6;
+  --color-primary: #ffb4a8;
+  --color-surface-container-lowest: #0e0e0e;
+  --color-secondary-fixed-dim: #ffb4a8;
+  --color-surface-container-high: #2a2a2a;
+  --color-on-secondary-container: #ff9a8a;
+  --color-tertiary-fixed-dim: #00e639;
+  --color-outline-variant: #603e39;
+  --color-surface-dim: #131313;
+  --color-surface-container-highest: #353534;
+  --color-tertiary-fixed: #72ff70;
+  --color-primary-fixed: #ffdad4;
+  --color-on-primary-fixed: #410000;
+
   --font-family-sans: 'Inter', sans-serif;
   --font-family-mono: 'JetBrains Mono', monospace;
   --font-family-display: 'Space Grotesk', sans-serif;
+  
+  --spacing-panel-padding: 20px;
+  --spacing-base: 4px;
+  --spacing-stack-lg: 32px;
+  --spacing-margin-page: 40px;
+  --spacing-stack-md: 16px;
+  --spacing-gutter: 24px;
+  --spacing-stack-sm: 8px;
+
+  --font-family-headline-lg: "Sora", sans-serif;
+  --font-family-label-caps: "Space Mono", monospace;
+  --font-family-headline-lg-mobile: "Sora", sans-serif;
+  --font-family-body-md: "JetBrains Mono", monospace;
+  --font-family-data-point: "JetBrains Mono", monospace;
+  --font-family-display-lg: "Sora", sans-serif;
+
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 1.2;
+  --text-headline-lg--font-weight: 700;
+  --text-label-caps: 11px;
+  --text-label-caps--line-height: 1;
+  --text-label-caps--letter-spacing: 0.15em;
+  --text-label-caps--font-weight: 700;
+  --text-headline-lg-mobile: 24px;
+  --text-headline-lg-mobile--line-height: 1.2;
+  --text-headline-lg-mobile--font-weight: 700;
+  --text-body-md: 14px;
+  --text-body-md--line-height: 1.6;
+  --text-body-md--font-weight: 400;
+  --text-data-point: 28px;
+  --text-data-point--line-height: 1;
+  --text-data-point--font-weight: 600;
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 1.1;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 800;
 }
 
 @layer base {

@@ -1,8 +1,6 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useMemo } from 'react';
 
 const Dashboard: React.FC = () => {
-    const navigate = useNavigate();
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -32,13 +30,7 @@ const Dashboard: React.FC = () => {
         return () => window.clearInterval(interval);
     }, []);
 
-    const handleLogout = useCallback(() => {
-        window.localStorage.removeItem('dangen_auth');
-        window.localStorage.removeItem('dangen_user');
-        window.sessionStorage.removeItem('dangen_auth');
-        window.sessionStorage.removeItem('dangen_user');
-        navigate('/login');
-    }, [navigate]);
+
 
     return (
         <div className="stitch-dashboard bg-background text-on-surface font-body-md overflow-x-hidden relative min-h-screen dark">
@@ -91,16 +83,12 @@ const Dashboard: React.FC = () => {
                         <span className="material-symbols-outlined">settings</span>
                         <span className="font-label-caps text-label-caps">Settings</span>
                     </div>
-                    <div className="flex items-center gap-stack-md text-on-surface-variant hover:text-primary transition-all cursor-pointer" onClick={handleLogout}>
-                        <span className="material-symbols-outlined">logout</span>
-                        <span className="font-label-caps text-label-caps">Logout</span>
-                    </div>
                     <div className="pt-6 border-t border-primary/10 flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full border border-primary/30 p-0.5">
                             <img alt="Threat Analyst Avatar" className="w-full h-full rounded-full" src="/assets/analyst-avatar.png" />
                         </div>
                         <div>
-                            <p className="font-label-caps text-[10px] text-white w-24 overflow-hidden text-ellipsis whitespace-nowrap" title={user}>{user}</p>
+                            <p className="font-label-caps text-[10px] text-white">{user}</p>
                             <p className="text-[9px] text-primary/50">Level 7</p>
                         </div>
                     </div>
@@ -229,7 +217,7 @@ const Dashboard: React.FC = () => {
                             <div className="map-node top-[60%] left-[45%]"></div>
                             <div className="map-node top-[55%] left-[80%]"></div>
                         </div>
-                        <div className="absolute bottom-6 left-6 stitch-glass-panel p-4 border-l-4 border-primary z-10">
+                        <div className="absolute bottom-6 left-6 stitch-glass-panel p-4 border-l-4 border-primary">
                             <p className="text-[10px] text-on-surface-variant font-bold mb-3">TOP ATTACK SOURCES</p>
                             <ul className="space-y-2 text-[11px] w-48">
                                 <li className="flex justify-between items-center"><span className="flex items-center gap-2"><span className="material-symbols-outlined text-[12px] text-primary">flag</span> Russia</span> <span className="font-bold">2,320</span></li>
@@ -238,7 +226,7 @@ const Dashboard: React.FC = () => {
                             </ul>
                             <button className="mt-4 text-[10px] text-primary hover:underline font-bold uppercase tracking-widest w-full text-center">View All</button>
                         </div>
-                        <div className="absolute bottom-6 right-6 flex items-center gap-3 z-10">
+                        <div className="absolute bottom-6 right-6 flex items-center gap-3">
                             <span className="text-[9px] text-on-surface-variant">Low</span>
                             <div className="flex gap-1">
                                 <div className="w-1.5 h-1.5 bg-tertiary rounded-full"></div>
@@ -253,7 +241,7 @@ const Dashboard: React.FC = () => {
                     <div className="col-span-4 flex flex-col gap-4">
                         <div className="stitch-glass-panel p-panel-padding flex-grow flex flex-col h-full overflow-hidden">
                             <h2 className="font-headline-lg text-lg text-white mb-4 uppercase tracking-tight">Live Threat Feed</h2>
-                            <div className="flex-grow overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                            <div className="flex-grow overflow-y-auto space-y-3 pr-2">
                                 <div className="flex items-center justify-between border-b border-primary/5 pb-2">
                                     <div className="flex items-center gap-3">
                                         <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
@@ -410,7 +398,7 @@ const Dashboard: React.FC = () => {
                             <span className="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer text-sm" onClick={() => setIsChatOpen(false)}>close</span>
                         </div>
                     </div>
-                    <div className="space-y-4 mb-6 h-48 overflow-y-auto pr-2 custom-scrollbar">
+                    <div className="space-y-4 mb-6 h-48 overflow-y-auto pr-2">
                         <div className="flex gap-3">
                             <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center">
                                 <span className="material-symbols-outlined text-[14px] text-primary">smart_toy</span>

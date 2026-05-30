@@ -26,13 +26,12 @@ from config.rate_limiter import RateLimitMiddleware
 configure_logging()
 app = FastAPI(title="Dangen AI Cyber Defense Gateway")
 
+allowed_origins_env = os.environ.get("ALLOWED_ORIGINS", "http://localhost:5173,https://cyberthreatdangen.vercel.app,https://dangen.vercel.app")
+origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://cyberthreatdangen.vercel.app",  # Example vercel domain, should be updated by user
-        "https://dangen.vercel.app"
-    ],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

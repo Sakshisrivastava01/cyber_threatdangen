@@ -95,7 +95,10 @@ const OtpInputGroup = ({ length = 6, value, onChange, disabled = false }: { leng
   );
 };
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? '';
+if (!API_BASE_URL) {
+  console.warn('API URL is missing, relying on relative paths');
+}
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();

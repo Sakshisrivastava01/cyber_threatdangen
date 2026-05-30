@@ -97,7 +97,7 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="pt-6 border-t border-primary/10 flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full border border-primary/30 p-0.5">
-                            <img alt="Threat Analyst Avatar" className="w-full h-full rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBICxuDH2Zss_1TrKLKS5p9py1BxEJzlgcDnpMcCNIxSEdUJw1mv9nZH3h4dyPrY5MgQqtRQoEQX7vEQIofh_MN4_lmYGZXm-KHAdbcpHCrKwWziT0iY8xqdA-o1brpErQA6GkjSU1VjIB1Bz3ALMbED1wLOqlH4JnNfL88-wJyqTCPfdSYZtfS_1LOadrqnKtr6xo3W0m4iJEmj6GbipXkD5WvbnuvI8g13EjReUlm0aPM3ezZNjoOiLi4IR4UIJuXljc08G4f--VQ" />
+                            <img alt="Threat Analyst Avatar" className="w-full h-full rounded-full" src="/assets/analyst-avatar.png" />
                         </div>
                         <div>
                             <p className="font-label-caps text-[10px] text-white w-24 overflow-hidden text-ellipsis whitespace-nowrap" title={user}>{user}</p>
@@ -223,7 +223,7 @@ const Dashboard: React.FC = () => {
                             </div>
                         </div>
                         <div className="absolute inset-0 opacity-40 mix-blend-screen pointer-events-none">
-                            <img className="w-full h-full object-cover grayscale invert" alt="A stylized global world map in high-contrast dark tones, featuring glowing red neon connection lines and pulsating data nodes indicating cyber attack routes. The aesthetic is ultra-modern HUD style with surgical precision, technical grid lines, and atmospheric depth, illuminated by soft red glows against a deep black background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-vl4Xw70Su7H5FWweP3BZj0VVTpXn8JYW5VlVV_jovDPcCkwoJlzl9JGl1EkE62g47mHd82lsqgBy3BZR9AIb3HZ9VkoKBd6-a4I7Cw_DKLpTgUl8-AirWvgc7xoLxhdlicxC8kVwUN2JR7zuBgDMyHQJQKUrGwo22brgCYZQlmKd2lAWKA0mUSbeYHpO1Bi1caJCVZQVsqGLynnIjWHAOEBGizfC50ZIx1wq_5TbJ76IjSpZLS1ll9lqe3hwOe_xxJTp7qbQ5HRg" />
+                            <img className="w-full h-full object-cover grayscale invert" alt="A stylized global world map in high-contrast dark tones, featuring glowing red neon connection lines and pulsating data nodes indicating cyber attack routes. The aesthetic is ultra-modern HUD style with surgical precision, technical grid lines, and atmospheric depth, illuminated by soft red glows against a deep black background." src="/assets/global-map-glow.png" />
                             <div className="map-node top-[40%] left-[25%]"></div>
                             <div className="map-node top-[30%] left-[70%]"></div>
                             <div className="map-node top-[60%] left-[45%]"></div>

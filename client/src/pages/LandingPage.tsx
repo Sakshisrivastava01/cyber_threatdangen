@@ -496,6 +496,20 @@ const LandingPage: React.FC = () => {
               Explore Platform
             </button>
           </div>
+          
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              title="Skip Login"
+              onClick={() => {
+                window.sessionStorage.setItem('dangen_explore', 'true');
+                navigate('/dashboard');
+              }}
+              className="inline-flex items-center justify-center rounded-full border border-red-500/50 bg-[#050505]/50 px-8 py-3 text-sm font-semibold uppercase tracking-[0.22em] text-red-400 shadow-[0_0_15px_rgba(255,0,60,0.15)] transition duration-200 hover:bg-red-500/10 hover:shadow-[0_0_25px_rgba(255,0,60,0.3)] backdrop-blur-md"
+            >
+              Explore Dashboard
+            </button>
+          </div>
         </motion.div>
       </main>
 

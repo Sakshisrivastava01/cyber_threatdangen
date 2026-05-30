@@ -20,9 +20,10 @@ const isAuthenticated = () =>
   window.localStorage.getItem('dangen_auth') === 'true' ||
   window.sessionStorage.getItem('dangen_auth') === 'true';
 
-const PrivateRoute = ({ children }: { children: React.ReactNode }) => (
-  isAuthenticated() ? <>{children}</> : <Navigate to="/login" replace />
-);
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const isExplore = window.sessionStorage.getItem('dangen_explore') === 'true';
+  return isAuthenticated() || isExplore ? <>{children}</> : <Navigate to="/login" replace />;
+};
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => (
   isAuthenticated() ? <Navigate to="/dashboard" replace /> : <>{children}</>
